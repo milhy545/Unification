@@ -306,8 +306,8 @@ ssh-add ~/.ssh/id_rsa   # Add key to agent
 /home/milhy777/Develop/Production/    # Production projects
 /home/milhy777/Develop/Development/   # WIP projects  
 
-# Unifikation project:
-/home/milhy777/Develop/Production/Unifikation/
+# Unification project:
+/home/milhy777/Develop/Production/Unification/
 ```
 
 ### **Backup Locations:**

@@ -240,7 +240,7 @@ topology = scanner.discover_network_topology()  # Robustní discovery
 
 ```bash
 $ python3 master_wizard.py
-🚀 Vítejte v Unifikation System Setup
+🚀 Vítejte v Unification System Setup
 Detekuji typ systému... Workstation (Ubuntu 20.04)
 Scanuji síť... Nalezeno 3 ecosystem servery
 Plánuji instalaci... 47 balíčků, 8 konfiguračních kroků
@@ -305,8 +305,8 @@ milhy777@llms:~$ # Prostě to funguje!
 Dnes náš ecosystem setup vypadá takto:
 
 ```bash
-$ git clone https://github.com/milhy545/Unifikation.git
-$ cd Unifikation  
+$ git clone https://github.com/milhy545/Unification.git
+$ cd Unification  
 $ python3 master_wizard.py
 ```
 

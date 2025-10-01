@@ -1,6 +1,6 @@
 # 🔥 The SSH Hell Chronicle: A True Story of 150+ Configuration Failures
 
-*A dramatized but accurate account of the infrastructure nightmare that gave birth to Unifikation*
+*A dramatized but accurate account of the infrastructure nightmare that gave birth to Unification*
 
 ---
 
@@ -203,7 +203,7 @@ Sitting at 3 AM, surrounded by printouts of SSH configs, with 47 browser tabs op
 
 ---
 
-## **The Birth of Unifikation**
+## **The Birth of Unification**
 
 **Day 36: The Phoenix Rising**
 
@@ -218,7 +218,7 @@ Sitting at 3 AM, surrounded by printouts of SSH configs, with 47 browser tabs op
 5. **Standardization** - One way to do each thing, applied everywhere
 6. **Edge Case Testing** - Test the impossible scenarios
 
-**The Unifikation Framework Design:**
+**The Unification Framework Design:**
 
 ```python
 # Instead of manual SSH config editing:
@@ -240,7 +240,7 @@ topology = scanner.discover_network_topology()  # Robust discovery
 
 ```bash
 $ python3 master_wizard.py
-🚀 Welcome to Unifikation System Setup
+🚀 Welcome to Unification System Setup
 Detecting system type... Workstation (Ubuntu 20.04)
 Scanning network... Found 3 ecosystem servers
 Planning installation... 47 packages, 8 configuration steps
@@ -293,7 +293,7 @@ milhy777@llms:~$ # It just works!
 - **Most repeated mistake:** Port 22/2222 confusion (19 times)
 
 **Recovery Cost:**
-- **Development time for Unifikation:** 80 hours
+- **Development time for Unification:** 80 hours
 - **Time saved on subsequent setups:** 45 minutes → 3 minutes
 - **Mistakes eliminated:** 100% (zero SSH issues since deployment)
 - **ROI on automation:** 400% and growing
@@ -305,8 +305,8 @@ milhy777@llms:~$ # It just works!
 Today, our ecosystem setup looks like this:
 
 ```bash
-$ git clone https://github.com/milhy545/Unifikation.git
-$ cd Unifikation  
+$ git clone https://github.com/milhy545/Unification.git
+$ cd Unification  
 $ python3 master_wizard.py
 ```
 
@@ -330,7 +330,7 @@ If you're reading this while debugging your 47th SSH configuration problem at 3 
 
 **The solution is not to try harder. The solution is to try systematically.**
 
-Build your own Unifikation. Document your failures. Automate your solutions. Test your edge cases.
+Build your own Unification. Document your failures. Automate your solutions. Test your edge cases.
 
 And remember: every problem you solve manually is a problem you'll solve again.
 

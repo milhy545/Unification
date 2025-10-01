@@ -1,4 +1,4 @@
-# 🚀 Unifikation - Ultimate System Setup Automation
+# 🚀 Unification - Ultimate System Setup Automation
 
 *English version below / Česká verze níže*
 
@@ -7,7 +7,7 @@
 ## 🇬🇧 **English Version**
 
 ### **Overview**
-Unifikation is a sophisticated automation framework for setting up and managing multi-server development environments. Born from the chaos of 150+ SSH configuration problems, this project demonstrates systematic problem-solving through intelligent automation.
+Unification is a sophisticated automation framework for setting up and managing multi-server development environments. Born from the chaos of 150+ SSH configuration problems, this project demonstrates systematic problem-solving through intelligent automation.
 
 ### **Key Features**
 - **5 Automated Setup Scenarios** - Workstation, LLM Server, Orchestration, Database, Monitoring
@@ -25,8 +25,8 @@ Unifikation is a sophisticated automation framework for setting up and managing 
 
 ### **Quick Start**
 ```bash
-git clone https://github.com/milhy545/Unifikation.git
-cd Unifikation
+git clone https://github.com/milhy545/Unification.git
+cd Unification
 python3 master_wizard.py
 ```
 
@@ -41,7 +41,7 @@ python3 master_wizard.py
 ## 🇨🇿 **Česká Verze**
 
 ### **Přehled**
-Unifikation je sofistikovaný automatizační framework pro nastavení a správu multi-serverových vývojových prostředí. Vznikl z chaosu 150+ problémů s SSH konfigurací a demonstruje systematické řešení problémů pomocí inteligentní automatizace.
+Unification je sofistikovaný automatizační framework pro nastavení a správu multi-serverových vývojových prostředí. Vznikl z chaosu 150+ problémů s SSH konfigurací a demonstruje systematické řešení problémů pomocí inteligentní automatizace.
 
 ### **Klíčové Funkce**
 - **5 Automatizovaných Setup Scénářů** - Workstation, LLM Server, Orchestrace, Databáze, Monitoring
@@ -59,8 +59,8 @@ Unifikation je sofistikovaný automatizační framework pro nastavení a správu
 
 ### **Rychlý Start**
 ```bash
-git clone https://github.com/milhy545/Unifikation.git
-cd Unifikation
+git clone https://github.com/milhy545/Unification.git
+cd Unification
 python3 master_wizard.py
 ```
 
@@ -75,7 +75,7 @@ python3 master_wizard.py
 ## 🏗️ **Project Structure**
 
 ```
-Unifikation/
+Unification/
 ├── master_wizard.py          # Main entry point
 ├── wizards/                  # Individual setup wizards
 │   ├── workstation_setup.py

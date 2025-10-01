@@ -370,10 +370,10 @@ PubkeyAuthentication yes
         try:
             # Welcome message
             if self.language == "cz":
-                print("🚀 Vítejte v Unifikation Workstation Setup")
+                print("🚀 Vítejte v Unification Workstation Setup")
                 print("Inteligentní automatizace nastavení vývojové stanice")
             else:
-                print("🚀 Welcome to Unifikation Workstation Setup")
+                print("🚀 Welcome to Unification Workstation Setup")
                 print("Intelligent development workstation automation")
                 
             # Gather requirements

@@ -1,5 +1,5 @@
 """
-Unifikation Setup Wizards
+Unification Setup Wizards
 Intelligent setup automation for different server types
 """
 
