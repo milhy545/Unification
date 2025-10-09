@@ -1,61 +1,126 @@
-# 🚀 Unification - Ultimátní Automatizace Nastavení Systému
+# 🚀 Unification – Ultimátní automatizace systémové instalace
 
-## Přehled
-Unification je sofistikovaný automatizační framework pro nastavení a správu multi-serverových vývojových prostředí. Vznikl z chaosu 150+ problémů s SSH konfigurací a demonstruje systematické řešení problémů pomocí inteligentní automatizace.
+## **Přehled**
+Unification je sofistikovaný automatizační rámec pro instalaci a správu více-serverových vývojových prostředí. Vznikl jako reakce na chaos více než 150 problémů s konfigurací SSH; tento projekt ukazuje systematické řešení problémů pomocí inteligentní automatizace.
 
-## Klíčové Funkce
-- **Automatizované Scénáře Nastavení** - Wizardy pro pracovní stanice, servery a další.
-- **Inteligentní Řešení Závislostí** - Chytrá správa balíčků.
-- **Síťová Topologie Intelligence** - Automatická detekce a konfigurace serverových ekosystémů.
-- **Dvojjazyčná Dokumentace** - Kompletní průvodci v angličtině (`README.md`) a češtině (`README.cz.md`).
+## **Klíčové vlastnosti**
+- **5 automatizovaných scénářů instalace** – pracovní stanice, LLM server, orchestrační server, databázový server, monitorovací server
+- **Inteligentní řešení závislostí** – chytrá správa balíčků napříč různými distribucemi OS
+- **Síťová topologická inteligence** – automatické rozpoznání a konfigurace serverového ekosystému
+- **Komplexní testování** – testování možných i nemožných scénářů
+- **Dvojjazyčná dokumentace** – kompletní návody v angličtině a češtině
 
-## Struktura Projektu
-```
-Unification/
-├── master_wizard.py          # Hlavní vstupní bod pro všechny scénáře
-├── wizards/                  # Jednotlivé setup wizardy
-│   └── workstation_setup.py  # --> Implementace probíhá
-├── tools/                    # Společné utility (detekce systému, validace, atd.)
-│   ├── system_detector.py
-│   ├── dependency_resolver.py
-│   ├── network_scanner.py
-│   └── config_validator.py
-├── configs/                  # Šablony konfigurací
-│   └── tmux.conf             # --> První implementovaná konfigurace
-├── tests/                    # Testy pro všechny komponenty
-└── docs/                     # Soubory s dokumentací
-    ├── stories/
-    └── ...
-```
+## **Systémové scénáře**
+1. **💻 Instalace pracovní stanice** – vývojová základna s AI nástroji
+2. **🧠 Instalace LLM Serveru** – dedikovaná jednotka pro AI zpracování
+3. **🏠 Orchestrační server** – domácí automatizace a koordinace služeb
+4. **🗄️ Databázový server** – centrální uzel správy dat
+5. **📊 Monitorovací server** – komplexní centrum pro dohled nad systémy
 
-## Aktuální Stav
-Projekt je v počáteční fázi vývoje. Základní framework a hlavní wizard `workstation_setup` se aktivně vyvíjí.
-- **✅ Implementováno:**
-  - Základní struktura projektu s wizardy a nástroji.
-  - **Nasazení konfigurace pro tmux** v rámci `workstation_setup` wizardu.
-- **Probíhá:**
-  - Restrukturalizace a aktualizace dokumentace.
-  - Implementace dalších kroků podle roadmapy.
-
-## Roadmapa
-Následující funkce jsou plánovány k implementaci, primárně v rámci `workstation_setup` wizardu:
-
-1.  **Konfigurace SSH Serveru:** Implementovat funkci `_configure_ssh_server` pro bezpečné nastavení `sshd_config`.
-2.  **Správa Napájení:** Implementovat `_setup_power_management` pro řízení teploty a napájení procesoru Q9550.
-3.  **Nastavení AI Nástrojů:** Implementovat `_setup_ai_tools` pro instalaci a konfiguraci vývojového prostředí pro AI.
-4.  **Nastavení Aliasů a Shellu:** Přidat krok pro nasazení unifikovaných aliasů a konfigurací shellu (např. `.bash_aliases`, `.zshrc`).
-5.  **Rozšíření Wizardů:** Po dokončení `workstation_setup` bude zahájen vývoj dalších plánovaných wizardů (`llm_server_setup`, `database_setup`, atd.).
-
-## Rychlý Start
+## **Rychlý start**
 ```bash
 git clone https://github.com/milhy545/Unification.git
 cd Unification
 python3 master_wizard.py
 ```
 
-## Licence
-Soukromý repozitář - Projekt pro portfolio a demonstraci.
+## **Dokumentace**
+- [Návod k architektuře](docs/en/architecture.md)
+- [Rychlý start](docs/en/quick-start.md)
+- [Řešení potíží](docs/en/troubleshooting.md)
+- [Kronika SSH pekla](docs/stories/ssh-hell-chronicle-en.md)
+
+## 🏗️ **Struktura projektu**
+```
+Unification/
+├── master_wizard.py          # Hlavní vstupní bod
+├── wizards/                  # Jednotlivé instalační průvodce
+│   ├── workstation_setup.py
+│   ├── llm_server_setup.py
+│   ├── orchestration_setup.py
+│   ├── database_setup.py
+│   └── monitoring_setup.py
+├── tools/                    # Sdílené nástroje
+│   ├── system_detector.py
+│   ├── dependency_resolver.py
+│   ├── network_scanner.py
+│   └── config_validator.py
+├── tests/                    # Komplexní sada testů
+│   ├── unit/
+│   ├── integration/
+│   ├── edge_cases/
+│   └── impossible_scenarios/
+├── docs/                     # Dvojjazyčná dokumentace
+│   ├── en/                   # Anglická dokumentace
+│   ├── cz/                   # Česká dokumentace
+│   ├── stories/              # Kroniky problémů
+│   └── shared/               # Příkladový kód
+└── configs/                  # Šablony konfigurací
+```
+
+## 🎯 **Přínos projektu**
+
+### **Technické výhody**
+- **Odstraňuje chyby ruční instalace** – konzistentní, opakovatelné konfigurace
+- **Zkracuje dobu instalace** – z hodin na minuty
+- **Škálovatelnost na libovolný počet strojů** – šablonová architektura
+- **Automaticky dokumentované** – každý krok je logován a ověřován
+
+### **Obchodní přínosy**
+- **Snižuje provozní náklady** – méně manuálního zásahu
+- **Rychlejší nástup nových členů týmu** – standardizovaná prostředí
+- **Vyšší spolehlivost** – automatizované testování a ověřování
+- **Zachování znalostí** – dokumentace získaných zkušeností
+
+### **Příběh SSH pekla**
+Projekt se zrodil z reálné noční můry: **150+ problémů s konfigurací SSH**, které se opakovaly ve tří-serverovém vývojovém ekosystému. Analýza příčin ukázala, že **80 % problémů vzniklo kvůli omezenému kontextu při řešení potíží**.
+
+**Nejdůležitější poznatky:**
+- **Systematická dokumentace** zabraňuje opakování chyb
+- **Automatizace eliminuje lidské chyby v konfiguraci**
+- **Konzistentní standardy** napříč všemi systémy jsou zásadní
+- **Testování nemožných scénářů** odhaluje skryté okrajové případy
+
+## 🔬 **Technické inovace**
+
+### **Inteligentní proces instalace**
+1. **Detekce systému** – analýza hardwaru, OS i topologie sítě
+2. **Analýza závislostí** – chytré řešení konfliktů balíčků
+3. **Plánování zdrojů** – optimální alokace prostředků
+4. **Automatizovaná instalace** – bez zásahu uživatele
+5. **Integrace testování** – ověření ve více systémech
+6. **Monitoring systému** – kontinuální dohled nad ekosystémem
+
+### **Řešení okrajových případů**
+- Přerušení sítě během instalace
+- Vyčerpání systémových zdrojů
+- Konfliktní závislosti služeb
+- Obnova poškozené instalace
+- Ověření bezpečnostní konfigurace
+
+## 📊 **Stav projektu**
+
+- **Fáze vývoje:** aktivní
+- **Pokrytí testů:** cíl 100 %
+- **Dokumentace:** dvojjazyčná (EN/CZ)
+- **Podporované platformy:** Ubuntu, Alpine Linux
+- **Architektura:** Python 3.8+, modulární návrh
+
+## 🤝 **Spolupráce**
+
+Tento projekt demonstruje pokročilou automatizaci systémů a metodiku řešení problémů. Slouží jako ukázka:
+
+- **Komplexní integrace systémů**
+- **Návrh inteligentní automatizace**
+- **Strategie komplexního testování**
+- **Dvojjazyčná technická dokumentace**
+- **Praktické řešení reálných problémů**
+
+## 📜 **Licence**
+
+Soukromý repozitář – ukázkový projekt a portfolio
 
 ---
-*Vytvořeno k řešení reálných výzev v oblasti automatizace infrastruktury.*
-*Vyvinuto s poznatky získanými z více než 150 bitev s konfigurací SSH.*
+
+*Vytvořeno pro řešení skutečných výzev v automatizaci infrastruktury.*  
+*Vyvinuto na základě zkušeností z více než 150 SSH konfiguračních bitev.*
