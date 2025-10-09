@@ -7,6 +7,7 @@ import os
 import sys
 import logging
 import subprocess
+import shutil
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 
@@ -324,13 +325,32 @@ PubkeyAuthentication yes
         # In real implementation, would modify /etc/ssh/sshd_config
         
     def _setup_tmux_ecosystem(self, config: WorkstationConfig, dry_run: bool):
-        """Setup tmux ecosystem integration."""
+        """Setup tmux ecosystem integration by copying the config file."""
         if dry_run:
-            self.logger.info("Would setup tmux ecosystem")
+            self.logger.info("Would copy tmux.conf to ~/.tmux.conf")
             return
-            
+
         self.logger.info("Setting up tmux ecosystem")
-        # In real implementation, would create tmux configs and auto-start scripts
+        
+        try:
+            # Construct paths
+            script_dir = os.path.dirname(__file__)
+            source_path = os.path.join(script_dir, '..', 'configs', 'tmux.conf')
+            dest_path = os.path.expanduser("~/.tmux.conf")
+
+            self.logger.info(f"Copying tmux config from {source_path} to {dest_path}")
+            
+            # Copy the file
+            shutil.copy(source_path, dest_path)
+            
+            self.logger.info("Successfully copied tmux.conf")
+
+        except FileNotFoundError:
+            self.logger.error(f"Tmux config source file not found at {source_path}")
+            raise
+        except Exception as e:
+            self.logger.error(f"Failed to copy tmux config: {e}")
+            raise
         
     def _setup_power_management(self, config: WorkstationConfig, dry_run: bool):
         """Setup Q9550 power management."""

@@ -263,7 +263,7 @@ Available ecosystems: {network_info}
 def main():
     """Main entry point with argument parsing."""
     parser = argparse.ArgumentParser(
-        Unification Master Wizard - Ultimate System Setup Automation
+        description="Unification Master Wizard - Ultimate System Setup Automation"
     )
     parser.add_argument(
         "--language", "-l",
