@@ -4,6 +4,7 @@ Automated setup for development workstation (Aspire PC type)
 """
 
 import os
+import sys
 import logging
 import subprocess
 import shutil
