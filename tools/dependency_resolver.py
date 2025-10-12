@@ -172,7 +172,17 @@ class DependencyResolver:
             apk_name="npm",
             brew_name="npm",
             description="Node.js package manager"
-        )
+        ),
+        "code": Package(name="code", apt_name="code", description="Visual Studio Code"),
+        "firefox": Package(name="firefox", apt_name="firefox-esr", description="Mozilla Firefox Browser"),
+        "vim": Package(name="vim", apt_name="vim", description="Vi IMproved, a programmer's text editor"),
+        "nano": Package(name="nano", apt_name="nano", description="Small and friendly text editor"),
+        "build-essential": Package(name="build-essential", apt_name="build-essential", description="Informational list of build-essential packages"),
+        "python3-dev": Package(name="python3-dev", apt_name="python3-dev", description="Header files and a static library for Python 3"),
+        "python3-venv": Package(name="python3-venv", apt_name="python3-venv", description="Utilities for creating virtual Python environments"),
+        "python3-pip": Package(name="python3-pip", apt_name="python3-pip", description="Python package installer (for Python 3)"),
+        "ffmpeg": Package(name="ffmpeg", apt_name="ffmpeg", description="Tools for transcoding, streaming and playing multimedia files"),
+        "git-lfs": Package(name="git-lfs", apt_name="git-lfs", description="Git extension for versioning large files")
     }
     
     def __init__(self):
@@ -239,10 +249,10 @@ class DependencyResolver:
             try:
                 if manager == PackageManager.APT:
                     result = subprocess.run(
-                        ['dpkg', '-l', package_name],
+                        ['dpkg-query', '-W', '-f=${Status}', package_name],
                         capture_output=True, text=True
                     )
-                    return result.returncode == 0
+                    return "install ok installed" in result.stdout
                     
                 elif manager == PackageManager.YUM:
                     result = subprocess.run(
@@ -417,21 +427,30 @@ class DependencyResolver:
             self.logger.error(f"Error output: {e.stderr}")
             return False
             
-    def update_package_lists(self) -> bool:
+    def update_package_lists(self, dry_run: bool = False) -> bool:
         """Update package manager repositories."""
         for manager in self.detected_managers:
+            command = []
+            if manager == PackageManager.APT:
+                command = ["sudo", "apt", "update"]
+            elif manager == PackageManager.YUM:
+                command = ["sudo", "yum", "check-update"]
+            elif manager == PackageManager.DNF:
+                command = ["sudo", "dnf", "check-update"]
+            elif manager == PackageManager.PACMAN:
+                command = ["sudo", "pacman", "-Sy"]
+            elif manager == PackageManager.APK:
+                command = ["sudo", "apk", "update"]
+            
+            if not command:
+                continue
+
+            if dry_run:
+                self.logger.info(f"Would run: {' '.join(command)}")
+                return True
+
             try:
-                if manager == PackageManager.APT:
-                    subprocess.run(["sudo", "apt", "update"], check=True)
-                elif manager == PackageManager.YUM:
-                    subprocess.run(["sudo", "yum", "check-update"], check=False)
-                elif manager == PackageManager.DNF:
-                    subprocess.run(["sudo", "dnf", "check-update"], check=False)
-                elif manager == PackageManager.PACMAN:
-                    subprocess.run(["sudo", "pacman", "-Sy"], check=True)
-                elif manager == PackageManager.APK:
-                    subprocess.run(["sudo", "apk", "update"], check=True)
-                    
+                subprocess.run(command, check=True, capture_output=True, text=True)
                 self.logger.info(f"Updated {manager.value} package lists")
                 return True
                 

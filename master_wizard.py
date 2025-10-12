@@ -178,9 +178,9 @@ Available ecosystems: {network_info}
                 print("\n\nExiting... / Ukončuji...")
                 sys.exit(0)
                 
-    def execute_scenario(self, scenario: SetupScenario):
+    def execute_scenario(self, scenario: SetupScenario, dry_run: bool = False):
         """Execute the selected setup scenario."""
-        self.logger.info(f"Starting setup scenario: {scenario.value}")
+        self.logger.info(f"Starting setup scenario: {scenario.value} (dry_run={dry_run})")
         
         scenario_modules = {
             SetupScenario.WORKSTATION: "wizards.workstation_setup",
@@ -196,7 +196,7 @@ Available ecosystems: {network_info}
             wizard_class = getattr(module, f"{scenario.value.title().replace('_', '')}Wizard")
             
             wizard = wizard_class(language=self.language)
-            wizard.run_setup()
+            wizard.run_setup(dry_run=dry_run)
             
         except ImportError as e:
             self.logger.error(f"Could not import wizard module: {e}")
@@ -234,7 +234,7 @@ Available ecosystems: {network_info}
             self.logger.error(f"Health check failed: {e}")
             print(f"Health check failed: {e}")
             
-    def run(self):
+    def run(self, dry_run: bool = False):
         """Main wizard execution loop."""
         self.display_banner()
         
@@ -248,7 +248,7 @@ Available ecosystems: {network_info}
                 
             elif choice in self.MENU_OPTIONS:
                 option = self.MENU_OPTIONS[choice]
-                self.execute_scenario(option.scenario)
+                self.execute_scenario(option.scenario, dry_run=dry_run)
                 
             elif choice == 6:
                 self.execute_ecosystem_integration()
@@ -281,6 +281,11 @@ def main():
         action="store_true",
         help="Enable verbose logging"
     )
+    parser.add_argument(
+        "--dry-run", "-d",
+        action="store_true",
+        help="Simulate execution without making system changes"
+    )
     
     args = parser.parse_args()
     
@@ -294,10 +299,10 @@ def main():
     if args.scenario:
         # Direct scenario execution
         scenario = SetupScenario(args.scenario)
-        wizard.execute_scenario(scenario)
+        wizard.execute_scenario(scenario, dry_run=args.dry_run)
     else:
         # Interactive mode
-        wizard.run()
+        wizard.run(dry_run=args.dry_run)
 
 
 if __name__ == "__main__":

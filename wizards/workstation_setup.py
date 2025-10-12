@@ -204,6 +204,7 @@ class WorkstationWizard:
                 "description": "Configure Q9550 thermal management",
                 "estimated_time": 180
             })
+            packages_to_install.extend(["cpufrequtils", "lm-sensors"])
             
         if config.setup_ai_tools:
             config_steps.append({
@@ -275,8 +276,7 @@ class WorkstationWizard:
         
         try:
             # Update package lists
-            if not dry_run:
-                self.dependency_resolver.update_package_lists()
+            self.dependency_resolver.update_package_lists(dry_run=dry_run)
                 
             # Install packages
             success = self.dependency_resolver.install_packages(
@@ -308,42 +308,74 @@ class WorkstationWizard:
             
     def _configure_ssh_server(self, config: WorkstationConfig, dry_run: bool):
         """Configure SSH server."""
+        self.logger.info("Configuring SSH server...")
+        ssh_config_path = "/etc/ssh/sshd_config"
+
+        # Idempotency Check
+        try:
+            with open(ssh_config_path, 'r') as f:
+                content = f.read()
+            if f"Port {config.ssh_port}" in content:
+                self.logger.info(f"SSH port {config.ssh_port} already configured. Skipping.")
+                return
+        except FileNotFoundError:
+            self.logger.error(f"SSH config file not found at {ssh_config_path}")
+            raise
+
         if dry_run:
-            self.logger.info("Would configure SSH server on port 2222")
-            return
-            
-        # Configure SSH server port
-        ssh_config = f"""
-# Workstation SSH Configuration
-Port {config.ssh_port}
-PermitRootLogin no
-PasswordAuthentication yes
-PubkeyAuthentication yes
-"""
-        
-        self.logger.info("Configuring SSH server")
-        # In real implementation, would modify /etc/ssh/sshd_config
-        
-    def _setup_tmux_ecosystem(self, config: WorkstationConfig, dry_run: bool):
-        """Setup tmux ecosystem integration by copying the config file."""
-        if dry_run:
-            self.logger.info("Would copy tmux.conf to ~/.tmux.conf")
+            self.logger.info(f"Would modify {ssh_config_path} to set Port to {config.ssh_port}")
+            self.logger.info("Would restart sshd service.")
             return
 
-        self.logger.info("Setting up tmux ecosystem")
-        
+        # Replace port configuration
         try:
-            # Construct paths
+            # First, try to replace commented port
+            subprocess.run(
+                ["sudo", "sed", "-i", f"s/^#Port 22/Port {config.ssh_port}/", ssh_config_path],
+                check=True
+            )
+            # If that didn't work, replace uncommented port
+            subprocess.run(
+                ["sudo", "sed", "-i", f"s/^Port 22/Port {config.ssh_port}/", ssh_config_path],
+                check=True
+            )
+            self.logger.info(f"Successfully updated SSH port to {config.ssh_port} in {ssh_config_path}")
+        except subprocess.CalledProcessError as e:
+            self.logger.error(f"Failed to modify SSH config file: {e}")
+            raise
+
+        # Restart SSH service
+        try:
+            self.logger.info("Restarting SSH service...")
+            subprocess.run(["sudo", "systemctl", "restart", "sshd"], check=True)
+            self.logger.info("SSH service restarted successfully.")
+        except subprocess.CalledProcessError as e:
+            self.logger.error(f"Failed to restart SSH service: {e}")
+            # Attempt to revert the change to avoid locking user out
+            self.logger.warning("Attempting to revert SSH configuration...")
+            subprocess.run(
+                ["sudo", "sed", "-i", f"s/^Port {config.ssh_port}/Port 22/", ssh_config_path],
+                check=False
+            )
+            raise
+
+        
+    def _setup_tmux_ecosystem(self, config: WorkstationConfig, dry_run: bool):
+        """Setup tmux ecosystem integration by copying the config file and installing tpm."""
+        self.logger.info("Setting up tmux ecosystem")
+
+        # 1. Copy tmux.conf
+        try:
             script_dir = os.path.dirname(__file__)
             source_path = os.path.join(script_dir, '..', 'configs', 'tmux.conf')
             dest_path = os.path.expanduser("~/.tmux.conf")
 
-            self.logger.info(f"Copying tmux config from {source_path} to {dest_path}")
-            
-            # Copy the file
-            shutil.copy(source_path, dest_path)
-            
-            self.logger.info("Successfully copied tmux.conf")
+            if dry_run:
+                self.logger.info(f"Would copy tmux config from {source_path} to {dest_path}")
+            else:
+                self.logger.info(f"Copying tmux config from {source_path} to {dest_path}")
+                shutil.copy(source_path, dest_path)
+                self.logger.info("Successfully copied tmux.conf")
 
         except FileNotFoundError:
             self.logger.error(f"Tmux config source file not found at {source_path}")
@@ -351,24 +383,92 @@ PubkeyAuthentication yes
         except Exception as e:
             self.logger.error(f"Failed to copy tmux config: {e}")
             raise
+
+        # 2. Install TPM (Tmux Plugin Manager)
+        tpm_path = os.path.expanduser("~/.tmux/plugins/tpm")
+        if os.path.exists(tpm_path):
+            self.logger.info("TPM already installed. Skipping.")
+            return
+
+        if dry_run:
+            self.logger.info(f"Would clone TPM into {tpm_path}")
+            return
+
+        self.logger.info("Cloning Tmux Plugin Manager (TPM)...")
+        try:
+            subprocess.run(
+                ["git", "clone", "https://github.com/tmux-plugins/tpm", tpm_path],
+                check=True,
+                capture_output=True,
+                text=True
+            )
+            self.logger.info("TPM cloned successfully.")
+        except subprocess.CalledProcessError as e:
+            self.logger.error(f"Failed to clone TPM: {e.stderr}")
+            raise
         
     def _setup_power_management(self, config: WorkstationConfig, dry_run: bool):
-        """Setup Q9550 power management."""
+        """Setup Q9550 power management by installing necessary tools."""
+        self.logger.info("Setting up Q9550 power management...")
+        power_packages = ["cpufrequtils", "lm-sensors"]
+
+        # This step relies on the main package installation logic.
+        # We just need to ensure the packages are in the list.
+        # The following is for direct invocation or clarity.
+
+        self.logger.info(f"Ensuring packages for power management are installed: {power_packages}")
+        
+        # The actual installation is handled by the main `execute_installation` method
+        # which gets the list from `create_installation_plan`. We need to add them there.
+        # This method is more of a placeholder for future specific logic.
+
         if dry_run:
-            self.logger.info("Would setup Q9550 power management")
+            self.logger.info(f"Would ensure {power_packages} are installed.")
             return
-            
-        self.logger.info("Setting up Q9550 power management")
-        # In real implementation, would install thermal monitoring and CPU controls
+
+        # For now, we can just log that the main installer should handle it.
+        self.logger.info("Power management package dependencies are handled by the main installer.")
+        self.logger.info("No specific configuration actions are required in this step at this time.")
         
     def _setup_ai_tools(self, config: WorkstationConfig, dry_run: bool):
-        """Setup AI development tools."""
-        if dry_run:
-            self.logger.info("Would setup AI tools")
-            return
+        """Setup AI development tools by installing Python packages."""
+        self.logger.info("Setting up AI development tools...")
+        
+        ai_packages = [
+            "openai",
+            "anthropic",
+            "google-generativeai",
+            "torch",
+            "transformers",
+            "accelerate"
+        ]
+
+        for package in ai_packages:
+            self.logger.info(f"Checking for Python package: {package}")
             
-        self.logger.info("Setting up AI development tools")
-        # In real implementation, would install Claude Code, setup Python environments
+            # Idempotency Check
+            try:
+                result = subprocess.run(["pip", "show", package], capture_output=True, text=True)
+                if result.returncode == 0:
+                    self.logger.info(f"Package '{package}' already installed. Skipping.")
+                    continue
+            except FileNotFoundError:
+                self.logger.error("'pip' command not found. Cannot install Python packages.")
+                raise
+
+            if dry_run:
+                self.logger.info(f"Would install Python package: {package}")
+                continue
+
+            # Install package
+            self.logger.info(f"Installing Python package: {package}...")
+            try:
+                subprocess.run(["pip", "install", package], check=True, capture_output=True, text=True)
+                self.logger.info(f"Successfully installed {package}.")
+            except subprocess.CalledProcessError as e:
+                self.logger.error(f"Failed to install {package}: {e.stderr}")
+                # Continue with other packages
+
         
     def validate_installation(self) -> bool:
         """Validate completed installation."""
@@ -385,7 +485,7 @@ PubkeyAuthentication yes
             self.logger.info("Installation validation passed")
             return True
             
-    def run_setup(self):
+    def run_setup(self, dry_run: bool = False):
         """Main setup workflow."""
         try:
             # Welcome message
@@ -410,16 +510,18 @@ PubkeyAuthentication yes
             
             # Confirm execution
             if self.language == "cz":
-                confirm = input("\nPokračovat s instalací? (y/n): ").lower()
+                confirm_prompt = "\nPokračovat s instalací?" + (" (DRY RUN)" if dry_run else "") + " (y/n): "
+                confirm = input(confirm_prompt).lower()
             else:
-                confirm = input("\nProceed with installation? (y/n): ").lower()
+                confirm_prompt = "\nProceed with installation?" + (" (DRY RUN)" if dry_run else "") + " (y/n): "
+                confirm = input(confirm_prompt).lower()
                 
             if confirm not in ['y', 'yes', 'ano']:
                 print("Installation cancelled / Instalace zrušena")
                 return
                 
             # Execute installation
-            self.execute_installation(plan, config)
+            self.execute_installation(plan, config, dry_run=dry_run)
             
             # Validate installation
             if self.validate_installation():
