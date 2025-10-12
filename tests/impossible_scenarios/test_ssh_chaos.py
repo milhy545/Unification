@@ -147,9 +147,9 @@ Host BROKEN
     def test_simultaneous_ssh_connections(self):
         """Test multiple SSH connections causing port conflicts."""
         # Simulate multiple connections to same server
-        with patch('socket.socket') as mock_socket:
+        with patch('tools.network_scanner.socket') as mock_socket_module:
             mock_instance = MagicMock()
-            mock_socket.return_value = mock_instance
+            mock_socket_module.socket.return_value = mock_instance
 
             # First connection succeeds
             mock_instance.connect_ex.side_effect = [0, 111, 111]  # ECONNREFUSED after first
