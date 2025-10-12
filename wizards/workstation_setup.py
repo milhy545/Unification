@@ -4,15 +4,11 @@ Automated setup for development workstation (Aspire PC type)
 """
 
 import os
-import sys
 import logging
 import subprocess
 import shutil
-from typing import Dict, List, Optional
+from typing import Dict
 from dataclasses import dataclass
-
-# Add parent directory to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from tools.system_detector import SystemDetector
 from tools.dependency_resolver import DependencyResolver
@@ -35,21 +31,21 @@ class WorkstationConfig:
 
 class WorkstationWizard:
     """Intelligent workstation setup wizard."""
-    
+
     REQUIRED_PACKAGES = [
-        "git", "python3", "pip", "curl", "wget", "ssh", "sshd", 
+        "git", "python3", "pip", "curl", "wget", "ssh", "sshd",
         "tmux", "htop", "nodejs", "npm"
     ]
-    
+
     DEVELOPMENT_PACKAGES = [
         "docker", "code", "firefox", "vim", "nano", "build-essential",
         "python3-dev", "python3-venv"
     ]
-    
+
     AI_TOOLS_PACKAGES = [
         "python3-pip", "python3-dev", "ffmpeg", "git-lfs"
     ]
-    
+
     def __init__(self, language: str = "en"):
         """Initialize workstation wizard."""
         self.language = language
@@ -58,7 +54,7 @@ class WorkstationWizard:
         self.network_scanner = NetworkScanner()
         self.config_validator = ConfigValidator()
         self.setup_logging()
-        
+
     def setup_logging(self):
         """Configure logging for the wizard."""
         logging.basicConfig(
@@ -70,49 +66,49 @@ class WorkstationWizard:
             ]
         )
         self.logger = logging.getLogger(__name__)
-        
+
     def gather_requirements(self) -> WorkstationConfig:
         """Gather workstation setup requirements from user."""
         self.logger.info("Gathering workstation setup requirements")
-        
+
         if self.language == "cz":
             print("\n🖥️ NASTAVENÍ VÝVOJOVÉ WORKSTATION")
             print("=" * 50)
             hostname = input("Název počítače [Aspire-PC]: ") or "Aspire-PC"
-            
+
             ssh_prompt = "Povolit SSH server? (y/n) [y]: "
             ssh_input = input(ssh_prompt).lower()
             enable_ssh = ssh_input in ['', 'y', 'yes', 'ano']
-            
+
             dev_prompt = "Nainstalovat vývojové nástroje? (y/n) [y]: "
             dev_input = input(dev_prompt).lower()
             install_dev = dev_input in ['', 'y', 'yes', 'ano']
-            
+
             ai_prompt = "Nastavit AI nástroje (Claude, etc.)? (y/n) [y]: "
             ai_input = input(ai_prompt).lower()
             setup_ai = ai_input in ['', 'y', 'yes', 'ano']
-            
+
             power_prompt = "Nastavit Q9550 power management? (y/n) [y]: "
             power_input = input(power_prompt).lower()
             setup_power = power_input in ['', 'y', 'yes', 'ano']
-            
+
         else:
             print("\n💻 WORKSTATION SETUP")
             print("=" * 30)
             hostname = input("Computer hostname [Aspire-PC]: ") or "Aspire-PC"
-            
+
             ssh_input = input("Enable SSH server? (y/n) [y]: ").lower()
             enable_ssh = ssh_input in ['', 'y', 'yes']
-            
+
             dev_input = input("Install development tools? (y/n) [y]: ").lower()
             install_dev = dev_input in ['', 'y', 'yes']
-            
+
             ai_input = input("Setup AI tools (Claude, etc.)? (y/n) [y]: ").lower()
             setup_ai = ai_input in ['', 'y', 'yes']
-            
+
             power_input = input("Setup Q9550 power management? (y/n) [y]: ").lower()
             setup_power = power_input in ['', 'y', 'yes']
-            
+
         return WorkstationConfig(
             hostname=hostname,
             enable_ssh_server=enable_ssh,
@@ -120,22 +116,22 @@ class WorkstationWizard:
             setup_ai_tools=setup_ai,
             configure_power_management=setup_power
         )
-        
+
     def analyze_system(self) -> Dict:
         """Analyze current system state."""
         self.logger.info("Analyzing system configuration")
-        
+
         # Detect system information
         system_info = self.system_detector.detect_comprehensive_info()
         thermal_info = self.system_detector.detect_thermal_capabilities()
         security_info = self.system_detector.detect_security_features()
-        
+
         # Detect network topology
         network_topology = self.network_scanner.discover_network_topology()
-        
+
         # Validate current configuration
         validation_report = self.config_validator.generate_validation_report()
-        
+
         analysis = {
             "system": system_info,
             "thermal": thermal_info,
@@ -145,7 +141,7 @@ class WorkstationWizard:
             "q9550_detected": thermal_info.get("q9550_detected", False),
             "existing_ecosystem": len(network_topology.ecosystem_servers) > 0
         }
-        
+
         # Display analysis results
         if self.language == "cz":
             print(f"\n📊 ANALÝZA SYSTÉMU")
@@ -161,43 +157,43 @@ class WorkstationWizard:
             print(f"• RAM: {system_info.memory_total // (1024**3)} GB")
             print(f"• Q9550 detected: {'✅' if analysis['q9550_detected'] else '❌'}")
             print(f"• Existing ecosystem: {len(network_topology.ecosystem_servers)} servers")
-            
+
         return analysis
-        
+
     def create_installation_plan(self, config: WorkstationConfig, analysis: Dict) -> Dict:
         """Create detailed installation plan."""
         self.logger.info("Creating installation plan")
-        
+
         # Base packages
         packages_to_install = self.REQUIRED_PACKAGES.copy()
-        
+
         # Add optional packages based on configuration
         if config.install_development_tools:
             packages_to_install.extend(self.DEVELOPMENT_PACKAGES)
-            
+
         if config.setup_ai_tools:
             packages_to_install.extend(self.AI_TOOLS_PACKAGES)
-            
+
         # Resolve dependencies
         installation_plan = self.dependency_resolver.resolve_dependencies(packages_to_install)
-        
+
         # Configuration steps
         config_steps = []
-        
+
         if config.enable_ssh_server:
             config_steps.append({
                 "name": "configure_ssh",
                 "description": "Configure SSH server on port 2222",
                 "estimated_time": 60
             })
-            
+
         if config.setup_tmux_ecosystem:
             config_steps.append({
                 "name": "setup_tmux",
                 "description": "Configure tmux ecosystem integration",
                 "estimated_time": 120
             })
-            
+
         if config.configure_power_management and analysis["q9550_detected"]:
             config_steps.append({
                 "name": "setup_power_management",
@@ -205,17 +201,17 @@ class WorkstationWizard:
                 "estimated_time": 180
             })
             packages_to_install.extend(["cpufrequtils", "lm-sensors"])
-            
+
         if config.setup_ai_tools:
             config_steps.append({
                 "name": "setup_ai_tools",
                 "description": "Configure AI development environment",
                 "estimated_time": 300
             })
-            
-        total_time = (installation_plan.estimated_time + 
+
+        total_time = (installation_plan.estimated_time +
                      sum(step["estimated_time"] for step in config_steps))
-        
+
         plan = {
             "packages": installation_plan,
             "configuration_steps": config_steps,
@@ -224,16 +220,16 @@ class WorkstationWizard:
             "conflicts": installation_plan.conflicts_detected,
             "warnings": []
         }
-        
+
         # Add warnings
         if analysis["validation"].overall_status == "error":
             plan["warnings"].append("System has configuration errors that need fixing")
-            
+
         if not analysis["security"]["sudo_available"]:
             plan["warnings"].append("Sudo access required for system configuration")
-            
+
         return plan
-        
+
     def display_installation_plan(self, plan: Dict):
         """Display installation plan to user."""
         if self.language == "cz":
@@ -242,55 +238,55 @@ class WorkstationWizard:
             print(f"• Konfigurační kroky: {len(plan['configuration_steps'])}")
             print(f"• Odhadovaný čas: {plan['total_estimated_time']//60} minut")
             print(f"• Potřebný diskový prostor: {plan['disk_space_required']} MB")
-            
+
             if plan['conflicts']:
                 print(f"⚠️  Konflikty: {len(plan['conflicts'])}")
                 for conflict in plan['conflicts']:
                     print(f"   • {conflict}")
-                    
+
             if plan['warnings']:
                 print(f"⚠️  Upozornění:")
                 for warning in plan['warnings']:
                     print(f"   • {warning}")
-                    
+
         else:
             print(f"\n📋 INSTALLATION PLAN")
             print(f"• Packages to install: {len(plan['packages'].packages_to_install)}")
             print(f"• Configuration steps: {len(plan['configuration_steps'])}")
             print(f"• Estimated time: {plan['total_estimated_time']//60} minutes")
             print(f"• Disk space required: {plan['disk_space_required']} MB")
-            
+
             if plan['conflicts']:
                 print(f"⚠️  Conflicts: {len(plan['conflicts'])}")
                 for conflict in plan['conflicts']:
                     print(f"   • {conflict}")
-                    
+
             if plan['warnings']:
                 print(f"⚠️  Warnings:")
                 for warning in plan['warnings']:
                     print(f"   • {warning}")
-                    
+
     def execute_installation(self, plan: Dict, config: WorkstationConfig, dry_run: bool = False):
         """Execute the installation plan."""
         self.logger.info(f"Executing installation plan (dry_run={dry_run})")
-        
+
         try:
             # Update package lists
             self.dependency_resolver.update_package_lists(dry_run=dry_run)
-                
+
             # Install packages
             success = self.dependency_resolver.install_packages(
-                plan['packages'].packages_to_install, 
+                plan['packages'].packages_to_install,
                 dry_run=dry_run
             )
-            
+
             if not success and not dry_run:
                 raise Exception("Package installation failed")
-                
+
             # Execute configuration steps
             for step in plan['configuration_steps']:
                 self.logger.info(f"Executing step: {step['name']}")
-                
+
                 if step['name'] == 'configure_ssh':
                     self._configure_ssh_server(config, dry_run)
                 elif step['name'] == 'setup_tmux':
@@ -299,13 +295,13 @@ class WorkstationWizard:
                     self._setup_power_management(config, dry_run)
                 elif step['name'] == 'setup_ai_tools':
                     self._setup_ai_tools(config, dry_run)
-                    
+
             self.logger.info("Installation completed successfully")
-            
+
         except Exception as e:
             self.logger.error(f"Installation failed: {e}")
             raise
-            
+
     def _configure_ssh_server(self, config: WorkstationConfig, dry_run: bool):
         """Configure SSH server."""
         self.logger.info("Configuring SSH server...")
@@ -359,7 +355,7 @@ class WorkstationWizard:
             )
             raise
 
-        
+
     def _setup_tmux_ecosystem(self, config: WorkstationConfig, dry_run: bool):
         """Setup tmux ecosystem integration by copying the config file and installing tpm."""
         self.logger.info("Setting up tmux ecosystem")
@@ -406,7 +402,7 @@ class WorkstationWizard:
         except subprocess.CalledProcessError as e:
             self.logger.error(f"Failed to clone TPM: {e.stderr}")
             raise
-        
+
     def _setup_power_management(self, config: WorkstationConfig, dry_run: bool):
         """Setup Q9550 power management by installing necessary tools."""
         self.logger.info("Setting up Q9550 power management...")
@@ -417,7 +413,7 @@ class WorkstationWizard:
         # The following is for direct invocation or clarity.
 
         self.logger.info(f"Ensuring packages for power management are installed: {power_packages}")
-        
+
         # The actual installation is handled by the main `execute_installation` method
         # which gets the list from `create_installation_plan`. We need to add them there.
         # This method is more of a placeholder for future specific logic.
@@ -429,11 +425,11 @@ class WorkstationWizard:
         # For now, we can just log that the main installer should handle it.
         self.logger.info("Power management package dependencies are handled by the main installer.")
         self.logger.info("No specific configuration actions are required in this step at this time.")
-        
+
     def _setup_ai_tools(self, config: WorkstationConfig, dry_run: bool):
         """Setup AI development tools by installing Python packages."""
         self.logger.info("Setting up AI development tools...")
-        
+
         ai_packages = [
             "openai",
             "anthropic",
@@ -445,7 +441,7 @@ class WorkstationWizard:
 
         for package in ai_packages:
             self.logger.info(f"Checking for Python package: {package}")
-            
+
             # Idempotency Check
             try:
                 result = subprocess.run(["pip", "show", package], capture_output=True, text=True)
@@ -469,13 +465,13 @@ class WorkstationWizard:
                 self.logger.error(f"Failed to install {package}: {e.stderr}")
                 # Continue with other packages
 
-        
+
     def validate_installation(self) -> bool:
         """Validate completed installation."""
         self.logger.info("Validating installation")
-        
+
         validation_report = self.config_validator.generate_validation_report()
-        
+
         if validation_report.overall_status == "error":
             self.logger.error("Installation validation failed")
             for issue in validation_report.critical_issues:
@@ -484,7 +480,7 @@ class WorkstationWizard:
         else:
             self.logger.info("Installation validation passed")
             return True
-            
+
     def run_setup(self, dry_run: bool = False):
         """Main setup workflow."""
         try:
@@ -495,19 +491,19 @@ class WorkstationWizard:
             else:
                 print("🚀 Welcome to Unification Workstation Setup")
                 print("Intelligent development workstation automation")
-                
+
             # Gather requirements
             config = self.gather_requirements()
-            
+
             # Analyze system
             analysis = self.analyze_system()
-            
+
             # Create installation plan
             plan = self.create_installation_plan(config, analysis)
-            
+
             # Display plan
             self.display_installation_plan(plan)
-            
+
             # Confirm execution
             if self.language == "cz":
                 confirm_prompt = "\nPokračovat s instalací?" + (" (DRY RUN)" if dry_run else "") + " (y/n): "
@@ -515,14 +511,14 @@ class WorkstationWizard:
             else:
                 confirm_prompt = "\nProceed with installation?" + (" (DRY RUN)" if dry_run else "") + " (y/n): "
                 confirm = input(confirm_prompt).lower()
-                
+
             if confirm not in ['y', 'yes', 'ano']:
                 print("Installation cancelled / Instalace zrušena")
                 return
-                
+
             # Execute installation
             self.execute_installation(plan, config, dry_run=dry_run)
-            
+
             # Validate installation
             if self.validate_installation():
                 if self.language == "cz":
@@ -534,7 +530,7 @@ class WorkstationWizard:
                     print("\n❌ Setup dokončen s chybami. Zkontrolujte logy.")
                 else:
                     print("\n❌ Setup completed with errors. Check logs.")
-                    
+
         except KeyboardInterrupt:
             print("\n\nSetup cancelled by user / Setup zrušen uživatelem")
         except Exception as e:

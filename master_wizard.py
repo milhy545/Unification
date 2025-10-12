@@ -4,7 +4,6 @@ Unifikation Master Wizard - Ultimate System Setup Automation
 Entry point for intelligent multi-server environment setup
 """
 
-import os
 import sys
 import argparse
 import logging
@@ -37,7 +36,7 @@ class MenuOption:
 
 class MasterWizard:
     """Main wizard orchestrating all setup scenarios."""
-    
+
     MENU_OPTIONS = {
         1: MenuOption(
             en="💻 Workstation Setup - Development powerhouse",
@@ -65,7 +64,7 @@ class MasterWizard:
             scenario=SetupScenario.MONITORING
         )
     }
-    
+
     ADDITIONAL_OPTIONS = {
         6: MenuOption(
             en="🔧 Add Machine to Ecosystem - Integrate existing machine",
@@ -83,7 +82,7 @@ class MasterWizard:
             scenario=None
         )
     }
-    
+
     def __init__(self, language: str = "en"):
         """Initialize master wizard with language preference."""
         self.language = language
@@ -92,7 +91,7 @@ class MasterWizard:
         self.network_scanner = NetworkScanner()
         self.config_validator = ConfigValidator()
         self.setup_logging()
-        
+
     def setup_logging(self):
         """Configure logging for the wizard."""
         log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -105,7 +104,7 @@ class MasterWizard:
             ]
         )
         self.logger = logging.getLogger(__name__)
-        
+
     def display_banner(self):
         """Display welcome banner with language selection."""
         banner = """
@@ -123,7 +122,7 @@ Available ecosystems: {network_info}
             network_info=self.get_network_summary()
         )
         print(banner)
-        
+
     def get_system_summary(self) -> str:
         """Get brief system information summary."""
         try:
@@ -132,7 +131,7 @@ Available ecosystems: {network_info}
         except Exception as e:
             self.logger.warning(f"Could not detect system info: {e}")
             return "Detection failed"
-            
+
     def get_network_summary(self) -> str:
         """Get brief network ecosystem summary."""
         try:
@@ -141,122 +140,122 @@ Available ecosystems: {network_info}
         except Exception as e:
             self.logger.warning(f"Could not scan network: {e}")
             return "Network scan failed"
-            
+
     def display_menu(self):
         """Display interactive menu in selected language."""
         print("\nChoose your setup scenario / Vyberte scénář nastavení:\n")
-        
+
         # Main scenarios
         for num, option in self.MENU_OPTIONS.items():
             text = option.cz if self.language == "cz" else option.en
             print(f"{num}. {text}")
-            
+
         print()  # Separator
-        
+
         # Additional options
         for num, option in self.ADDITIONAL_OPTIONS.items():
             text = option.cz if self.language == "cz" else option.en
             print(f"{num}. {text}")
-            
+
         print("\n0. Exit / Ukončit")
-        
+
     def get_user_choice(self) -> int:
         """Get and validate user menu choice."""
         while True:
             try:
                 choice = input("\nEnter your choice / Zadejte volbu (0-8): ")
                 choice_num = int(choice)
-                
+
                 if 0 <= choice_num <= 8:
                     return choice_num
                 else:
                     print("Invalid choice. Please enter 0-8 / Neplatná volba. Zadejte 0-8")
-                    
+
             except ValueError:
                 print("Please enter a number / Zadejte číslo")
             except KeyboardInterrupt:
                 print("\n\nExiting... / Ukončuji...")
                 sys.exit(0)
-                
+
     def execute_scenario(self, scenario: SetupScenario, dry_run: bool = False):
         """Execute the selected setup scenario."""
         self.logger.info(f"Starting setup scenario: {scenario.value} (dry_run={dry_run})")
-        
+
         scenario_modules = {
             SetupScenario.WORKSTATION: "wizards.workstation_setup",
-            SetupScenario.LLM_SERVER: "wizards.llm_server_setup", 
+            SetupScenario.LLM_SERVER: "wizards.llm_server_setup",
             SetupScenario.ORCHESTRATION: "wizards.orchestration_setup",
             SetupScenario.DATABASE: "wizards.database_setup",
             SetupScenario.MONITORING: "wizards.monitoring_setup"
         }
-        
+
         try:
             module_name = scenario_modules[scenario]
             module = __import__(module_name, fromlist=[''])
             wizard_class = getattr(module, f"{scenario.value.title().replace('_', '')}Wizard")
-            
+
             wizard = wizard_class(language=self.language)
             wizard.run_setup(dry_run=dry_run)
-            
+
         except ImportError as e:
             self.logger.error(f"Could not import wizard module: {e}")
             print(f"Setup scenario not yet implemented: {scenario.value}")
         except Exception as e:
             self.logger.error(f"Setup failed: {e}")
             print(f"Setup failed: {e}")
-            
+
     def execute_ecosystem_integration(self):
         """Add existing machine to ecosystem."""
         print("🔧 Ecosystem Integration - Coming soon...")
-        
+
     def execute_post_reinstall_recovery(self):
         """Recover system after OS reinstall."""
         print("🔄 Post-Reinstall Recovery - Coming soon...")
-        
+
     def execute_health_check(self):
         """Perform comprehensive ecosystem health check."""
         print("🩺 Running ecosystem health check...")
-        
+
         try:
             # System health
             system_status = self.system_detector.health_check()
             print(f"System Health: {'✅ OK' if system_status else '❌ Issues detected'}")
-            
-            # Network connectivity  
+
+            # Network connectivity
             network_status = self.network_scanner.connectivity_check()
             print(f"Network Health: {'✅ OK' if network_status else '❌ Connection issues'}")
-            
+
             # Configuration validation
             config_status = self.config_validator.validate_ecosystem()
             print(f"Configuration Health: {'✅ OK' if config_status else '❌ Config issues'}")
-            
+
         except Exception as e:
             self.logger.error(f"Health check failed: {e}")
             print(f"Health check failed: {e}")
-            
+
     def run(self, dry_run: bool = False):
         """Main wizard execution loop."""
         self.display_banner()
-        
+
         while True:
             self.display_menu()
             choice = self.get_user_choice()
-            
+
             if choice == 0:
                 print("Goodbye! / Na shledanou!")
                 break
-                
+
             elif choice in self.MENU_OPTIONS:
                 option = self.MENU_OPTIONS[choice]
                 self.execute_scenario(option.scenario, dry_run=dry_run)
-                
+
             elif choice == 6:
                 self.execute_ecosystem_integration()
             elif choice == 7:
                 self.execute_post_reinstall_recovery()
             elif choice == 8:
                 self.execute_health_check()
-                
+
             input("\nPress Enter to continue / Stiskněte Enter pro pokračování...")
 
 
@@ -286,16 +285,16 @@ def main():
         action="store_true",
         help="Simulate execution without making system changes"
     )
-    
+
     args = parser.parse_args()
-    
+
     # Set logging level
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
-        
+
     # Create and run wizard
     wizard = MasterWizard(language=args.language)
-    
+
     if args.scenario:
         # Direct scenario execution
         scenario = SetupScenario(args.scenario)
