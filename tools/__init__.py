@@ -1,7 +1,3 @@
-"""
-Unification Tools Package
-Common utilities for system setup automation
-"""
+""" Small package marker for tools. """
 
-__version__ = "1.0.0"
-__author__ = "Unification Project"
+__all__ = []
