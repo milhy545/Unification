@@ -147,21 +147,22 @@ Host BROKEN
     def test_simultaneous_ssh_connections(self):
         """Test multiple SSH connections causing port conflicts."""
         # Simulate multiple connections to same server
-        with patch('tools.network_scanner.socket') as mock_socket_module:
-            mock_instance = MagicMock()
-            mock_socket_module.socket.return_value = mock_instance
+        with patch('tools.network_scanner.socket.socket') as mock_socket:
+            # The socket object is a context manager, so we need to mock the instance
+            # returned by __enter__.
+            mock_socket_instance = mock_socket.return_value.__enter__.return_value
 
-            # First connection succeeds
-            mock_instance.connect_ex.side_effect = [0, 111, 111]  # ECONNREFUSED after first
+            # First connection succeeds (returns 0), subsequent ones fail
+            mock_socket_instance.connect_ex.side_effect = [0, 111, 111]
 
             # Should handle connection refusal gracefully
             result1 = self.network_scanner.scan_port("192.168.0.41", 22)
             result2 = self.network_scanner.scan_port("192.168.0.41", 22)
             result3 = self.network_scanner.scan_port("192.168.0.41", 22)
 
-            self.assertTrue(result1)   # First should succeed
-            self.assertFalse(result2)  # Others should fail but not crash
-            self.assertFalse(result3)
+            self.assertTrue(result1, "First connection should succeed")
+            self.assertFalse(result2, "Second connection should fail")
+            self.assertFalse(result3, "Third connection should fail")
 
     def test_tmux_session_name_conflicts(self):
         """Test tmux session name conflicts that caused session chaos."""
