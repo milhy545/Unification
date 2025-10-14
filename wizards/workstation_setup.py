@@ -464,6 +464,11 @@ class WorkstationWizard:
         self.logger.info("Configuring SSH server...")
         ssh_config_path = "/etc/ssh/sshd_config"
 
+        if dry_run:
+            self.logger.info(f"Would modify {ssh_config_path} to set Port to {config.ssh_port}")
+            self.logger.info("Would restart sshd service.")
+            return
+
         # Idempotency Check
         try:
             with open(ssh_config_path, 'r') as f:
@@ -473,11 +478,7 @@ class WorkstationWizard:
                 return
         except FileNotFoundError:
             self.logger.error(f"SSH config file not found at {ssh_config_path}")
-            raise
-
-        if dry_run:
-            self.logger.info(f"Would modify {ssh_config_path} to set Port to {config.ssh_port}")
-            self.logger.info("Would restart sshd service.")
+            self.logger.warning("Skipping SSH configuration - openssh-server may not be installed")
             return
 
         # Replace port configuration
