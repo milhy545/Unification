@@ -519,11 +519,11 @@ class WorkstationWizard:
         self.logger.info("Setting up tmux ecosystem")
 
         # 1. Copy tmux.conf
+        script_dir = os.path.dirname(__file__)
+        source_path = os.path.join(script_dir, '..', 'configs', 'tmux.conf')
+        dest_path = os.path.expanduser("~/.tmux.conf")
+        
         try:
-            script_dir = os.path.dirname(__file__)
-            source_path = os.path.join(script_dir, '..', 'configs', 'tmux.conf')
-            dest_path = os.path.expanduser("~/.tmux.conf")
-
             if dry_run:
                 self.logger.info(f"Would copy tmux config from {source_path} to {dest_path}")
             else:
