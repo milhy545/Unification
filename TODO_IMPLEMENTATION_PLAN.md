@@ -2,7 +2,7 @@
 
 **Cíl:** Vytvořit robustní, idempotentní a "blbuvzdorný" skript `workstation_setup.py`, který automatizuje nastavení vývojářské stanice podle finálního plánu (verze 6).
 
-**Status:** ✅ **DOKONČENO** - Všechny fáze implementovány a otestovány v dry-run režimu
+**Status:** ✅ **IMPLEMENTACE DOKONČENA**, zbývají testy pro produkční nasazení
 
 ---
 
@@ -175,6 +175,8 @@
 ## Závěr
 
 ✅ **Všechny plánované fáze byly úspěšně implementovány a otestovány v dry-run režimu.**
+
+**Poznámka:** Pro plnou produkční připravenost je nutné provést zbývající testy uvedené v sekci "Zbývající testy (pro produkční nasazení)".
 
 Implementace je:
 - ✅ Robustní (error handling, graceful degradation)

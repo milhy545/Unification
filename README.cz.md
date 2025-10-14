@@ -4,18 +4,13 @@
 Unification je sofistikovaný automatizační rámec pro instalaci a správu více-serverových vývojových prostředí. Vznikl jako reakce na chaos více než 150 problémů s konfigurací SSH; tento projekt ukazuje systematické řešení problémů pomocí inteligentní automatizace.
 
 ## **Klíčové vlastnosti**
-- **5 automatizovaných scénářů instalace** – pracovní stanice, LLM server, orchestrační server, databázový server, monitorovací server
-- **Inteligentní řešení závislostí** – chytrá správa balíčků napříč různými distribucemi OS
+    - **1 automatizovaný scénář instalace** – pracovní stanice- **Inteligentní řešení závislostí** – chytrá správa balíčků napříč různými distribucemi OS
 - **Síťová topologická inteligence** – automatické rozpoznání a konfigurace serverového ekosystému
 - **Komplexní testování** – testování možných i nemožných scénářů
 - **Dvojjazyčná dokumentace** – kompletní návody v angličtině a češtině
 
 ## **Systémové scénáře**
 1. **💻 Instalace pracovní stanice** – vývojová základna s AI nástroji
-2. **🧠 Instalace LLM Serveru** – dedikovaná jednotka pro AI zpracování
-3. **🏠 Orchestrační server** – domácí automatizace a koordinace služeb
-4. **🗄️ Databázový server** – centrální uzel správy dat
-5. **📊 Monitorovací server** – komplexní centrum pro dohled nad systémy
 
 ## **Rychlý start**
 ```bash
@@ -36,10 +31,6 @@ Unification/
 ├── master_wizard.py          # Hlavní vstupní bod
 ├── wizards/                  # Jednotlivé instalační průvodce
 │   ├── workstation_setup.py
-│   ├── llm_server_setup.py
-│   ├── orchestration_setup.py
-│   ├── database_setup.py
-│   └── monitoring_setup.py
 ├── tools/                    # Sdílené nástroje
 │   ├── system_detector.py
 │   ├── dependency_resolver.py

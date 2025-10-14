@@ -84,14 +84,71 @@ class NetworkScanner:
             # Get local IP address
             hostname = socket.gethostname()
             local_ip = socket.gethostbyname(hostname)
+            
+            # If we got loopback, try to get real network interface
+            if local_ip.startswith("127."):
+                try:
+                    import netifaces
+                    interfaces = netifaces.interfaces()
+                    for interface in interfaces:
+                        if interface.startswith('lo'):
+                            continue
+                        addrs = netifaces.ifaddresses(interface)
+                        if netifaces.AF_INET in addrs:
+                            for addr in addrs[netifaces.AF_INET]:
+                                ip = addr.get('addr')
+                                if ip and not ip.startswith('127.'):
+                                    local_ip = ip
+                                    break
+                        if not local_ip.startswith("127."):
+                            break
+                except ImportError:
+                    # Fallback: try to get IP from route
+                    try:
+                        result = subprocess.run(['ip', 'route', 'get', '8.8.8.8'], 
+                                              capture_output=True, text=True)
+                        if result.returncode == 0:
+                            for line in result.stdout.split('\n'):
+                                if 'src' in line:
+                                    parts = line.split()
+                                    for i, part in enumerate(parts):
+                                        if part == 'src' and i + 1 < len(parts):
+                                            local_ip = parts[i + 1]
+                                            break
+                                    break
+                    except Exception:
+                        pass
 
             # Determine subnet
-            if local_ip and gateway:
+            if local_ip and gateway and not local_ip.startswith("127."):
                 # Assume /24 subnet for common home networks
                 network = ipaddress.IPv4Network(f"{local_ip}/24", strict=False)
                 subnet = str(network.network_address) + "/24"
+            elif local_ip and not local_ip.startswith("127."):
+                # Fallback if no gateway detected
+                network = ipaddress.IPv4Network(f"{local_ip}/24", strict=False)
+                subnet = str(network.network_address) + "/24"
             else:
-                subnet = None
+                # If localhost, try to get real network interface
+                try:
+                    import netifaces
+                    interfaces = netifaces.interfaces()
+                    for interface in interfaces:
+                        if interface.startswith('lo'):
+                            continue
+                        addrs = netifaces.ifaddresses(interface)
+                        if netifaces.AF_INET in addrs:
+                            for addr in addrs[netifaces.AF_INET]:
+                                ip = addr.get('addr')
+                                if ip and not ip.startswith('127.'):
+                                    local_ip = ip
+                                    network = ipaddress.IPv4Network(f"{local_ip}/24", strict=False)
+                                    subnet = str(network.network_address) + "/24"
+                                    break
+                        if subnet:
+                            break
+                except ImportError:
+                    subnet = None
 
             return {
                 "local_ip": local_ip,

@@ -4,8 +4,7 @@
 Unification is a sophisticated automation framework for setting up and managing multi-server development environments. Born from the chaos of 150+ SSH configuration problems, this project demonstrates systematic problem-solving through intelligent automation.
 
 ## **Key Features**
-- **5 Automated Setup Scenarios** - Workstation, LLM Server, Orchestration, Database, Monitoring
-- **Intelligent Dependency Resolution** - Smart package management across different OS distributions
+    - **1 Automated Setup Scenario** - Workstation- **Intelligent Dependency Resolution** - Smart package management across different OS distributions
 - **Network Topology Intelligence** - Auto-discovery and configuration of server ecosystems
 - **Comprehensive Testing** - Tests for possible and impossible scenarios
 - **Bilingual Documentation** - Complete guides in English and Czech
@@ -16,10 +15,6 @@ Unification is a sophisticated automation framework for setting up and managing 
    - 35 APT packages, 13 Flatpak applications
    - Docker, ZSH, Oh My Zsh, Micromamba, Cursor IDE
    - Idempotent, dry-run capable, comprehensive logging
-2. **🧠 LLM Server Setup** - Dedicated AI processing unit
-3. **🏠 Orchestration Server** - Home automation and service coordination
-4. **🗄️ Database Server** - Centralized data management hub
-5. **📊 Monitoring Server** - Complete observability center
 
 ## **Quick Start**
 
@@ -54,10 +49,6 @@ Unification/
 ├── master_wizard.py          # Main entry point
 ├── wizards/                  # Individual setup wizards
 │   ├── workstation_setup.py
-│   ├── llm_server_setup.py
-│   ├── orchestration_setup.py
-│   ├── database_setup.py
-│   └── monitoring_setup.py
 ├── tools/                    # Common utilities
 │   ├── system_detector.py
 │   ├── dependency_resolver.py

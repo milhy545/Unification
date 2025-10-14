@@ -3,3 +3,10 @@
 
 # GitHub App credentials
 gha-creds-*.json
+
+# Python generated files
+__pycache__/
+*.pyc
+
+# Log files
+*.log
