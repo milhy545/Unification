@@ -12,22 +12,39 @@ Unification is a sophisticated automation framework for setting up and managing 
 
 ## **System Scenarios**
 1. **💻 Workstation Setup** - Development powerhouse with AI tools
+   - ✅ **Fully Implemented** - 4-phase automated installation
+   - 35 APT packages, 13 Flatpak applications
+   - Docker, ZSH, Oh My Zsh, Micromamba, Cursor IDE
+   - Idempotent, dry-run capable, comprehensive logging
 2. **🧠 LLM Server Setup** - Dedicated AI processing unit
 3. **🏠 Orchestration Server** - Home automation and service coordination
 4. **🗄️ Database Server** - Centralized data management hub
 5. **📊 Monitoring Server** - Complete observability center
 
 ## **Quick Start**
+
+### Full Installation
 ```bash
 git clone https://github.com/milhy545/Unification.git
 cd Unification
 python3 master_wizard.py
 ```
 
+### Workstation Setup (Direct)
+```bash
+# Dry-run mode (safe testing)
+python3 -c "from wizards.workstation_setup import WorkstationWizard; WorkstationWizard(language='en').run_setup(dry_run=True)"
+
+# Full installation
+python3 -c "from wizards.workstation_setup import WorkstationWizard; WorkstationWizard(language='en').run_setup()"
+```
+
 ## **Documentation**
 - [Architecture Guide](docs/en/architecture.md)
 - [Quick Start Guide](docs/en/quick-start.md)
 - [Troubleshooting](docs/en/troubleshooting.md)
+- [Workstation Applications List](docs/en/workstation_applications.md)
+- [TODO Implementation Plan](TODO_IMPLEMENTATION_PLAN.md)
 - [SSH Hell Chronicle](docs/stories/ssh-hell-chronicle-en.md)
 
 
@@ -92,6 +109,37 @@ This project was born from a real-world nightmare: **150+ SSH configuration prob
 5. **Integration Testing** - Cross-system validation
 6. **Health Monitoring** - Continuous ecosystem monitoring
 
+### **Workstation Wizard - 4-Phase Installation**
+
+**Phase 1: Basic System & Environment**
+- APT cache update with verification
+- Flatpak and Git installation
+- dupotEasyFlatpak setup (clone/update)
+- Flathub repository configuration
+
+**Phase 2: Core System & CLI Tools**
+- 35 APT packages installation (Docker, ZSH, development tools)
+- Docker repository setup with GPG keys
+- Oh My Zsh installation and configuration
+- Power management for specific hardware (Q9550)
+
+**Phase 3: Application Layer (Flatpak)**
+- 13 Flatpak applications via easy-flatpak
+- IDEs: VSCode, VSCodium, DBeaver, Arduino IDE
+- API Tools: Postman, Insomnia
+- Communication: Firefox, Telegram, Proton Mail Bridge
+
+**Phase 4: Special Installations**
+- Micromamba (conda alternative)
+- Cursor IDE (AppImage)
+
+**Key Features:**
+- ✅ **Idempotent** - Safe to run multiple times
+- ✅ **Dry-run mode** - Test without system changes
+- ✅ **Comprehensive logging** - Every step documented
+- ✅ **Error handling** - Graceful degradation on failures
+- ✅ **Bilingual** - English and Czech support
+
 ### **Edge Case Handling**
 - Network partitions during setup
 - Resource exhaustion scenarios
@@ -102,10 +150,18 @@ This project was born from a real-world nightmare: **150+ SSH configuration prob
 ## 📊 **Project Status**
 
 - **Development Phase:** Active
-- **Test Coverage:** Targeting 100%
+- **Workstation Wizard:** ✅ Fully Implemented & Tested
+- **Test Coverage:** Dry-run tests passing, targeting 100%
 - **Documentation:** Bilingual (EN/CZ)
 - **Platform Support:** Ubuntu, Alpine Linux
 - **Architecture:** Python 3.8+, modular design
+
+### Recent Updates
+- ✅ Complete workstation setup wizard implementation (4 phases)
+- ✅ 35 APT packages + 13 Flatpak applications
+- ✅ Docker, ZSH, Micromamba, Cursor IDE support
+- ✅ Comprehensive dry-run testing
+- ✅ Idempotent operations with error handling
 
 ## 🤝 **Contributing**
 
