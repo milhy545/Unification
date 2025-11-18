@@ -10,3 +10,14 @@ __pycache__/
 
 # Log files
 *.log
+
+# SSH Keys - NEVER COMMIT THESE
+ssh-keys-export/*.key
+ssh-keys-export/*_key
+ssh-keys-export/*.pem
+ssh-keys-export/id_*
+**/id_rsa
+**/id_ed25519
+**/*.key
+**/*.pem
+!**/*.key.pub
