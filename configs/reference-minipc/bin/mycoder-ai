@@ -1,0 +1,4 @@
+#!/bin/bash
+echo '🤖 Starting MyCoder AI - Full Assistant...'
+cd ~
+python3 mycoder-ai.py

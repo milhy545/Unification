@@ -1,0 +1,100 @@
+# Unified SSH Server Configuration Template
+# For Unification Project Ecosystem
+# Version: 2025-11-11
+
+# ============================================================================
+# NETWORK CONFIGURATION
+# ============================================================================
+Port {{SSH_PORT}}                    # Default: 2222 (servers), 22 (workstations)
+AddressFamily inet                    # IPv4 only (simplify configuration)
+ListenAddress 0.0.0.0                # Listen on all interfaces
+
+# ============================================================================
+# AUTHENTICATION
+# ============================================================================
+PermitRootLogin {{ROOT_LOGIN}}        # no (standard) | prohibit-password (HAS only)
+PubkeyAuthentication yes              # Enable public key authentication
+PasswordAuthentication no             # SECURITY: Disable password auth
+PermitEmptyPasswords no              # Never allow empty passwords
+ChallengeResponseAuthentication no    # Disable challenge-response
+MaxAuthTries 3                        # Limit authentication attempts
+LoginGraceTime 30                     # Short grace period (seconds)
+
+# ============================================================================
+# PROTOCOL & HOST KEYS
+# ============================================================================
+Protocol 2                            # SSH Protocol 2 only
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+# ============================================================================
+# CRYPTOGRAPHY (HARDENED)
+# ============================================================================
+# Ciphers: Modern, fast, secure algorithms
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+
+# MACs: Encrypt-then-MAC for better security
+MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-512
+
+# Key Exchange: Modern Diffie-Hellman
+KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512
+
+# ============================================================================
+# SESSION MANAGEMENT
+# ============================================================================
+MaxSessions 2                         # Limit concurrent sessions
+ClientAliveInterval 300               # Send keepalive every 5 minutes
+ClientAliveCountMax 2                 # Disconnect after 2 failed keepalives (10 min timeout)
+
+# ============================================================================
+# ACCESS CONTROL
+# ============================================================================
+AllowUsers {{ALLOWED_USERS}}          # Whitelist: milhy777 (standard) | root (HAS only)
+DenyUsers guest                       # Blacklist: guest account
+
+# Optional: Group-based access control
+# AllowGroups {{ALLOWED_GROUPS}}      # wheel, ssh-users, etc.
+
+# ============================================================================
+# FEATURES
+# ============================================================================
+X11Forwarding yes                     # Required for remote desktop/GUI apps
+AllowTcpForwarding yes               # Enable port forwarding
+AllowAgentForwarding yes             # Enable SSH agent forwarding
+PermitTunnel yes                      # Allow tunneling
+GatewayPorts no                       # Disable gateway ports (security)
+
+# Optional: StreamLocal features (advanced)
+# StreamLocalBindUnlink yes
+# AllowStreamLocalForwarding yes
+
+# ============================================================================
+# LOGGING
+# ============================================================================
+SyslogFacility AUTH                   # Log to auth facility
+LogLevel VERBOSE                      # Detailed logging for troubleshooting
+
+# Optional: Custom banner
+# Banner /etc/ssh/banner              # Display warning banner (HAS only)
+
+# ============================================================================
+# PAM & MISC
+# ============================================================================
+UsePAM yes                            # Enable PAM integration
+PrintMotd no                          # Don't print MOTD (handled by shell)
+AcceptEnv LANG LC_*                  # Accept locale environment variables
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+# ============================================================================
+# VARIABLE DEFINITIONS (for template replacement)
+# ============================================================================
+# {{SSH_PORT}}       = 2222 (servers) | 22 (workstations)
+# {{ROOT_LOGIN}}     = no (default) | prohibit-password (HAS)
+# {{ALLOWED_USERS}}  = milhy777 (standard) | "milhy777 root" (HAS)
+# {{ALLOWED_GROUPS}} = wheel (optional)
+#
+# Example instantiation:
+#   Aspire (workstation): SSH_PORT=22, ROOT_LOGIN=no, ALLOWED_USERS=milhy777
+#   HAS (server):         SSH_PORT=2222, ROOT_LOGIN=prohibit-password, ALLOWED_USERS="milhy777 root"
+#   LLMS/minipc:          SSH_PORT=2222, ROOT_LOGIN=no, ALLOWED_USERS=milhy777

@@ -87,8 +87,64 @@ class ConfigValidator:
                         message="No explicit SSH ports configured"
                     ))
 
-                # Check for key files
-                if "IdentityFile" in config_content:
+                # Simple parser to detect duplicate Host blocks and port conflicts
+                hosts: List[Dict[str, Optional[str]]] = []
+                current: Dict[str, Optional[str]] = {}
+                for raw in config_content.splitlines():
+                    line = raw.strip()
+                    if not line or line.startswith('#'):
+                        continue
+                    lower = line.lower()
+                    if lower.startswith('host '):
+                        # push previous
+                        if current:
+                            hosts.append(current)
+                        current = {"host": line.split(None, 1)[1].strip(), "hostname": None, "port": None}
+                    elif lower.startswith('hostname '):
+                        if current is not None:
+                            current["hostname"] = line.split(None, 1)[1].strip()
+                    elif lower.startswith('port '):
+                        if current is not None:
+                            current["port"] = line.split(None, 1)[1].strip()
+                    elif lower.startswith('identityfile'):
+                        # identity files presence is checked below separately
+                        pass
+                if current:
+                    hosts.append(current)
+
+                # Build maps
+                by_alias: Dict[str, List[Dict[str, Optional[str]]]] = {}
+                by_hostname: Dict[str, List[Dict[str, Optional[str]]]] = {}
+                for h in hosts:
+                    alias = h.get('host') or ""
+                    by_alias.setdefault(alias, []).append(h)
+                    hn = h.get('hostname') or ""
+                    if hn:
+                        by_hostname.setdefault(hn, []).append(h)
+
+                # Duplicate alias definitions
+                for alias, items in by_alias.items():
+                    if alias and len(items) > 1:
+                        results.append(ValidationResult(
+                            component="ssh_config_duplicate_alias",
+                            status="warning",
+                            message=f"Multiple Host blocks for alias '{alias}' in {ssh_config_path}",
+                            details={"alias": alias, "count": len(items)}
+                        ))
+
+                # Hostname port conflicts
+                for hn, items in by_hostname.items():
+                    ports = {it.get('port') for it in items if it.get('port')}
+                    if len(ports) > 1:
+                        results.append(ValidationResult(
+                            component="ssh_config_port_conflict",
+                            status="warning",
+                            message=f"Conflicting ports for HostName {hn}: {sorted(list(ports))}",
+                            details={"hostname": hn, "ports": sorted(list(ports)), "path": ssh_config_path}
+                        ))
+
+                # Check for key files occurrence
+                if "IdentityFile" in config_content or "identityfile" in config_content:
                     results.append(ValidationResult(
                         component="ssh_keys",
                         status="ok",
