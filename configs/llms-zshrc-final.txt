@@ -1,0 +1,58 @@
+# Path to Oh My Zsh installation
+export ZSH="$HOME/.oh-my-zsh"
+
+# Set LC_ALL for proper character encoding
+export LC_ALL=C.UTF-8
+
+# Theme
+ZSH_THEME="robbyrussell"
+
+# Plugins - unified configuration from minipc reference
+plugins=(
+    git
+    python
+    pip
+    sudo
+    history
+    colored-man-pages
+    command-not-found
+    extract
+    copyfile
+    copypath
+    dirhistory
+    encode64
+    jsontools
+    battery
+    common-aliases
+    history-substring-search
+    magic-enter
+    aliases
+    node
+    npm
+    tmux
+    z
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+)
+
+# Load Oh My Zsh
+source $ZSH/oh-my-zsh.sh
+
+# User configuration
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
+
+# NVM
+export NVM_DIR="$HOME/.config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# Cargo
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+# Bash config integration
+[ -f $HOME/.config/bash-config/bashrc.bash ] && [ -f $HOME/.config/bash-config/bashrc.bash ] && source $HOME/.config/bash-config/bashrc.bash 2>/dev/null || true
+
+# tmux Auto-attach - Clean minipc-style implementation
+if [[ -n "$SSH_CONNECTION" ]] && [[ -z "$TMUX" ]] && [[ $- == *i* ]]; then
+    ~/bin/tmux-manager
+fi

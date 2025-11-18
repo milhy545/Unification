@@ -66,101 +66,107 @@ class NetworkScanner:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
-    def get_local_network_info(self) -> Dict[str, str]:
-        """Get local network configuration."""
+    def get_local_network_info(self) -> Dict[str, Optional[str]]:
+        """Get local network configuration in a robust, multi-strategy way.
+        Returns keys: local_ip, subnet, gateway, interface. Values may be None when unknown.
+        """
+        gateway: Optional[str] = None
+        interface: Optional[str] = None
+        local_ip: Optional[str] = None
+        subnet: Optional[str] = None
+
+        # Strategy A: use `ip` if available
         try:
-            # Get default route
-            result = subprocess.run(['ip', 'route', 'show', 'default'],
-                                  capture_output=True, text=True)
-            if result.returncode == 0:
-                # Parse default route: default via 192.168.0.1 dev wlan0
-                parts = result.stdout.split()
-                gateway = parts[2] if len(parts) > 2 else None
-                interface = parts[4] if len(parts) > 4 else None
+            from tools.preconditions import has_command
+        except Exception:
+            def has_command(_):
+                return False
+
+        try:
+            if has_command('ip'):
+                result = subprocess.run(['ip', 'route', 'show', 'default'], capture_output=True, text=True)
+                if result.returncode == 0 and result.stdout:
+                    parts = result.stdout.split()
+                    gateway = parts[2] if len(parts) > 2 else None
+                    interface = parts[4] if len(parts) > 4 else None
+                else:
+                    self.logger.info("No default route info from 'ip route' (rc=%s)", result.returncode)
             else:
-                gateway = None
-                interface = None
-
-            # Get local IP address
-            hostname = socket.gethostname()
-            local_ip = socket.gethostbyname(hostname)
-            
-            # If we got loopback, try to get real network interface
-            if local_ip.startswith("127."):
-                try:
-                    import netifaces
-                    interfaces = netifaces.interfaces()
-                    for interface in interfaces:
-                        if interface.startswith('lo'):
-                            continue
-                        addrs = netifaces.ifaddresses(interface)
-                        if netifaces.AF_INET in addrs:
-                            for addr in addrs[netifaces.AF_INET]:
-                                ip = addr.get('addr')
-                                if ip and not ip.startswith('127.'):
-                                    local_ip = ip
-                                    break
-                        if not local_ip.startswith("127."):
-                            break
-                except ImportError:
-                    # Fallback: try to get IP from route
-                    try:
-                        result = subprocess.run(['ip', 'route', 'get', '8.8.8.8'], 
-                                              capture_output=True, text=True)
-                        if result.returncode == 0:
-                            for line in result.stdout.split('\n'):
-                                if 'src' in line:
-                                    parts = line.split()
-                                    for i, part in enumerate(parts):
-                                        if part == 'src' and i + 1 < len(parts):
-                                            local_ip = parts[i + 1]
-                                            break
-                                    break
-                    except Exception:
-                        pass
-
-            # Determine subnet
-            if local_ip and gateway and not local_ip.startswith("127."):
-                # Assume /24 subnet for common home networks
-                network = ipaddress.IPv4Network(f"{local_ip}/24", strict=False)
-                subnet = str(network.network_address) + "/24"
-            elif local_ip and not local_ip.startswith("127."):
-                # Fallback if no gateway detected
-                network = ipaddress.IPv4Network(f"{local_ip}/24", strict=False)
-                subnet = str(network.network_address) + "/24"
-            else:
-                # If localhost, try to get real network interface
-                try:
-                    import netifaces
-                    interfaces = netifaces.interfaces()
-                    for interface in interfaces:
-                        if interface.startswith('lo'):
-                            continue
-                        addrs = netifaces.ifaddresses(interface)
-                        if netifaces.AF_INET in addrs:
-                            for addr in addrs[netifaces.AF_INET]:
-                                ip = addr.get('addr')
-                                if ip and not ip.startswith('127.'):
-                                    local_ip = ip
-                                    network = ipaddress.IPv4Network(f"{local_ip}/24", strict=False)
-                                    subnet = str(network.network_address) + "/24"
-                                    break
-                        if subnet:
-                            break
-                except ImportError:
-                    subnet = None
-
-            return {
-                "local_ip": local_ip,
-                "gateway": gateway,
-                "subnet": subnet,
-                "interface": interface,
-                "hostname": hostname
-            }
-
+                self.logger.info("'ip' command not available; using fallbacks for network info")
         except Exception as e:
-            self.logger.error(f"Could not get network info: {e}")
-            return {}
+            self.logger.warning("Failed to query default route via 'ip': %s", e)
+
+        # Resolve hostname IP first
+        try:
+            hostname = socket.gethostname()
+            resolved = socket.gethostbyname(hostname)
+            local_ip = resolved
+        except Exception as e:
+            self.logger.info("Hostname resolution for local IP failed: %s", e)
+            local_ip = None
+
+        # Strategy B: if loopback or None, try netifaces
+        if not local_ip or local_ip.startswith('127.'):
+            try:
+                import netifaces
+                for iface in netifaces.interfaces():
+                    if iface.startswith('lo'):
+                        continue
+                    addrs = netifaces.ifaddresses(iface)
+                    if netifaces.AF_INET in addrs:
+                        for addr in addrs[netifaces.AF_INET]:
+                            ip = addr.get('addr')
+                            if ip and not ip.startswith('127.'):
+                                local_ip = ip
+                                interface = interface or iface
+                                subnet = addr.get('netmask')
+                                break
+                    if local_ip and not local_ip.startswith('127.'):
+                        break
+            except Exception as e:
+                self.logger.info("netifaces not usable for IP discovery: %s", e)
+
+        # Strategy C: use route to external IP to infer src
+        if (not local_ip or local_ip.startswith('127.')) and has_command('ip'):
+            try:
+                result = subprocess.run(['ip', 'route', 'get', '8.8.8.8'], capture_output=True, text=True)
+                if result.returncode == 0:
+                    for token in result.stdout.split():
+                        if token == 'src':
+                            # next token is ip
+                            # find index safely
+                            toks = result.stdout.split()
+                            try:
+                                idx = toks.index('src')
+                                local_ip = toks[idx+1]
+                            except Exception:
+                                pass
+                        if token == 'dev' and not interface:
+                            toks = result.stdout.split()
+                            try:
+                                idx = toks.index('dev')
+                                interface = toks[idx+1]
+                            except Exception:
+                                pass
+                else:
+                    self.logger.info("'ip route get' failed (rc=%s)", result.returncode)
+            except Exception as e:
+                self.logger.info("Fallback via 'ip route get' failed: %s", e)
+
+        # Compute subnet CIDR if we have IP and netmask
+        try:
+            if local_ip and subnet:
+                net = ipaddress.IPv4Network(f"{local_ip}/{subnet}", strict=False)
+                subnet = str(net)
+        except Exception as e:
+            self.logger.debug("Failed to compute subnet CIDR: %s", e)
+
+        return {
+            "local_ip": local_ip,
+            "subnet": subnet,
+            "gateway": gateway,
+            "interface": interface,
+        }
 
     def scan_port(self, ip: str, port: int, timeout: float = 1.0) -> bool:
         """Scan single port on target IP."""

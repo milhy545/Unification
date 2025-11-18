@@ -1,0 +1,3 @@
+#!/bin/bash
+echo 'MyCoder Lite - HAS Client'
+python3 /home/milhy777/mycoder-lite.py

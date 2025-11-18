@@ -1,0 +1,81 @@
+# Unified SSH Client Configuration Template
+# For Unification Project Ecosystem
+# Version: 2025-11-11
+
+# ============================================================================
+# ECOSYSTEM SERVERS
+# ============================================================================
+
+Host HAS
+    HostName 192.168.0.58
+    User {{HAS_USER}}                # root (from HAS) | milhy777 (from others)
+    IdentityFile ~/.ssh/unified_ecosystem_key
+    Port 2222
+    StrictHostKeyChecking no
+    PasswordAuthentication no
+
+Host Home-Automation-Server
+    HostName 192.168.0.58
+    User {{HAS_USER}}
+    IdentityFile ~/.ssh/unified_ecosystem_key
+    Port 2222
+    StrictHostKeyChecking no
+    PasswordAuthentication no
+
+Host LLMS
+    HostName 192.168.0.41
+    User milhy777
+    IdentityFile ~/.ssh/unified_ecosystem_key
+    Port 2222
+    StrictHostKeyChecking no
+    PasswordAuthentication no
+
+Host Aspire
+    HostName 192.168.0.10
+    User milhy777
+    IdentityFile ~/.ssh/unified_ecosystem_key
+    Port 22                           # Workstation uses default port
+    StrictHostKeyChecking no
+    PasswordAuthentication no
+
+Host minipc
+    HostName 192.168.0.111
+    User milhy777
+    IdentityFile ~/.ssh/unified_ecosystem_key
+    Port 2222
+    StrictHostKeyChecking no
+    PasswordAuthentication no
+
+# ============================================================================
+# GLOBAL DEFAULTS
+# ============================================================================
+
+Host *
+    # Connection settings
+    ServerAliveInterval 60           # Send keepalive every minute
+    ServerAliveCountMax 3            # Disconnect after 3 failed keepalives
+
+    # Security
+    HashKnownHosts no                # Don't hash known_hosts (easier to manage)
+
+    # Performance
+    Compression yes                   # Enable compression
+    TCPKeepAlive yes                 # TCP-level keepalive
+
+    # Multiplexing (optional - uncomment to enable)
+    # ControlMaster auto
+    # ControlPath ~/.ssh/sockets/%r@%h:%p
+    # ControlPersist 10m
+
+# ============================================================================
+# VARIABLE DEFINITIONS (for template replacement)
+# ============================================================================
+# {{HAS_USER}} = root (when connecting FROM HAS) | milhy777 (when connecting TO HAS from others)
+#
+# Usage:
+#   1. Copy this file to ~/.ssh/config
+#   2. Replace {{HAS_USER}} based on source system:
+#      - On HAS itself: Use "root"
+#      - On all others: Use "milhy777"
+#   3. Ensure unified_ecosystem_key exists in ~/.ssh/
+#   4. Test with: ssh HAS (should connect without password)

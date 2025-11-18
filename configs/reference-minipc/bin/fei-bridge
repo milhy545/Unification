@@ -1,0 +1,9 @@
+#!/bin/bash
+echo 'FEI Bridge - HAS Memory Access'
+echo 'Usage: remember/recall text'  
+echo 'Example: remember Testing from vacation'
+echo ''
+read -p 'Enter command: ' cmd
+python3 /home/milhy777/fei-bridge.py "$cmd"
+echo
+read -p 'Press Enter to close...'

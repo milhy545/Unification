@@ -1,0 +1,66 @@
+#!/bin/bash
+# tmux-manager - Unified tmux session manager
+# Reference implementation from minipc
+#
+# Location: ~/bin/tmux-manager
+# Called from: ~/.zshrc or ~/.bashrc on SSH connection
+#
+# Usage: Automatically invoked on SSH login if TMUX not already running
+
+# Check if tmux is running
+if tmux list-sessions &>/dev/null; then
+    echo "📺 Existující tmux sessions:"
+    tmux list-sessions
+    echo
+    echo "1) Připojit k existující session"
+    echo "2) Vytvořit novou session"
+    echo "3) Pokračovat bez tmux"
+    echo
+    read -p "Volba (1-3): " choice
+
+    case $choice in
+        1)
+            if [ $(tmux list-sessions 2>/dev/null | wc -l) -eq 1 ]; then
+                # Pouze jedna session, připoj se k ní
+                SESSION=$(tmux list-sessions -F '#S' | head -1)
+                tmux attach-session -t "$SESSION"
+            else
+                # Více sessions, nech uživatele vybrat
+                echo "Dostupné sessions:"
+                tmux list-sessions -F '#S: #{session_windows} windows'
+                echo
+                read -p "Název session: " session_name
+                tmux attach-session -t "$session_name" 2>/dev/null || echo "Session '$session_name' neexistuje"
+            fi
+            ;;
+        2)
+            read -p "Název nové session: " new_session
+            tmux new-session -s "${new_session:-default}"
+            ;;
+        3)
+            echo "Pokračuji bez tmux..."
+            ;;
+        *)
+            echo "Neplatná volba, pokračuji bez tmux..."
+            ;;
+    esac
+else
+    echo "🆕 Žádné tmux sessions neběží"
+    echo "1) Vytvořit novou session"
+    echo "2) Pokračovat bez tmux"
+    echo
+    read -p "Volba (1-2): " choice
+
+    case $choice in
+        1)
+            read -p "Název session (default): " session_name
+            tmux new-session -s "${session_name:-default}"
+            ;;
+        2)
+            echo "Pokračuji bez tmux..."
+            ;;
+        *)
+            echo "Neplatná volba, pokračuji bez tmux..."
+            ;;
+    esac
+fi
