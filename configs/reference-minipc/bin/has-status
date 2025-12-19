@@ -1,0 +1,21 @@
+#!/bin/bash
+echo '🔍 Checking HAS Server Status...'
+echo '================================='
+cd ~
+if [ -f "./has-client.sh" ]; then
+    ./has-client.sh status
+    status_code=$?
+    echo
+    if [ $status_code -eq 0 ]; then
+        echo '✅ HAS Status Check: SUCCESSFUL'
+    else
+        echo '❌ HAS Status Check: FAILED (code: $status_code)'
+    fi
+else
+    echo '❌ ERROR: has-client.sh not found in home directory'
+    echo 'Available files:'
+    ls -la *.sh 2>/dev/null || echo 'No .sh files found'
+fi
+echo '================================='
+echo 'Status check complete'
+read -p 'Press Enter to close...'

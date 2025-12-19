@@ -180,11 +180,11 @@ class DependencyResolver:
         "build-essential": Package(name="build-essential", apt_name="build-essential",
                                    description="Informational list of build-essential packages"),
         "python3-dev": Package(name="python3-dev", apt_name="python3-dev",
-                             description="Header files and a static library for Python 3"),
+                               description="Header files and a static library for Python 3"),
         "python3-venv": Package(name="python3-venv", apt_name="python3-venv",
-                              description="Utilities for creating virtual Python environments"),
+                                description="Utilities for creating virtual Python environments"),
         "python3-pip": Package(name="python3-pip", apt_name="python3-pip",
-                             description="Python package installer (for Python 3)"),
+                               description="Python package installer (for Python 3)"),
         "ffmpeg": Package(name="ffmpeg", apt_name="ffmpeg",
                           description="Tools for transcoding, streaming and playing multimedia files"),
         "git-lfs": Package(name="git-lfs", apt_name="git-lfs", description="Git extension for versioning large files")
@@ -223,9 +223,9 @@ class DependencyResolver:
         """Check if command exists in system PATH."""
         try:
             subprocess.run(['which', command],
-                         check=True,
-                         capture_output=True,
-                         text=True)
+                           check=True,
+                           capture_output=True,
+                           text=True)
             return True
         except subprocess.CalledProcessError:
             return False
@@ -384,14 +384,14 @@ class DependencyResolver:
 
         for manager in self.detected_managers:
             if manager in [PackageManager.APT, PackageManager.YUM, PackageManager.DNF,
-                          PackageManager.PACMAN, PackageManager.APK]:
+                           PackageManager.PACMAN, PackageManager.APK]:
                 return self._install_with_system_manager(packages, manager, dry_run)
 
         self.logger.error("No suitable package manager found")
         return False
 
     def _install_with_system_manager(self, packages: List[Package],
-                                   manager: PackageManager, dry_run: bool) -> bool:
+                                     manager: PackageManager, dry_run: bool) -> bool:
         """Install packages with system package manager."""
         package_names = []
 
@@ -423,7 +423,7 @@ class DependencyResolver:
 
         try:
             self.logger.info(f"Running: {' '.join(command)}")
-            result = subprocess.run(command, check=True, capture_output=True, text=True)
+            subprocess.run(command, check=True, capture_output=True, text=True)
             self.logger.info("Package installation completed successfully")
             return True
 

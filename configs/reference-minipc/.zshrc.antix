@@ -1,0 +1,45 @@
+export LC_ALL=C.UTF-8
+export ZSH="$HOME/.oh-my-zsh"
+
+# AntiX-specific theme (lighter than agnoster)
+ZSH_THEME="robbyrussell"
+
+# Plugins available on AntiX
+plugins=(
+    git
+    python
+    pip  
+    sudo
+    history
+    colored-man-pages
+    command-not-found
+    extract
+    copyfile
+    copypath
+    dirhistory
+    encode64
+    fzf
+    jsontools
+    battery
+    common-aliases
+    history-substring-search
+    magic-enter
+    aliases
+    node
+    npm
+    tmux
+    z
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+)
+
+source $ZSH/oh-my-zsh.sh
+
+# AntiX notebook specific aliases
+alias htools="~/start-has-tools"
+export PATH=$HOME/bin:$PATH
+
+# Tailscale shortcuts
+alias has-ping="ping -c 3 192.168.0.58"  
+alias llms-ping="ping -c 3 192.168.0.41"
+alias tailscale-status="tailscale status"

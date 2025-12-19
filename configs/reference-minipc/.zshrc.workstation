@@ -1,0 +1,496 @@
+export LC_ALL=C.UTF-8
+
+# If you come from bash you might have to change your $PATH.
+# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+
+# Path to your Oh My Zsh installation.
+export ZSH="$HOME/.oh-my-zsh"
+
+# Check if we're actually running zsh
+if [ -z "$ZSH_VERSION" ]; then
+  # We're not in zsh, skip zsh-specific commands
+  return 2>/dev/null || exit
+fi
+
+# Set name of the theme to load --- if set to "random", it will
+# load a random theme each time Oh My Zsh is loaded, in which case,
+# to know which specific one was loaded, run: echo $RANDOM_THEME
+# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+ZSH_THEME="agnoster"
+
+# Set list of themes to pick from when loading at random
+# Setting this variable when ZSH_THEME=random will cause zsh to load
+# a theme from this variable instead of looking in $ZSH/themes/
+# If set to an empty array, this variable will have no effect.
+# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+
+# Uncomment the following line to use case-sensitive completion.
+# CASE_SENSITIVE="true"
+
+# Uncomment the following line to use hyphen-insensitive completion.
+# Case-sensitive completion must be off. _ and - will be interchangeable.
+# HYPHEN_INSENSITIVE="true"
+
+# Uncomment one of the following lines to change the auto-update behavior
+# zstyle ':omz:update' mode disabled  # disable automatic updates
+# zstyle ':omz:update' mode auto      # update automatically without asking
+# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
+
+# Uncomment the following line to change how often to auto-update (in days).
+# zstyle ':omz:update' frequency 13
+
+# Uncomment the following line if pasting URLs and other text is messed up.
+# DISABLE_MAGIC_FUNCTIONS="true"
+
+# Uncomment the following line to disable colors in ls.
+# DISABLE_LS_COLORS="true"
+
+# Uncomment the following line to disable auto-setting terminal title.
+# DISABLE_AUTO_TITLE="true"
+
+# Uncomment the following line to enable command auto-correction.
+# ENABLE_CORRECTION="true"
+
+# Uncomment the following line to display red dots whilst waiting for completion.
+# You can also set it to another string to have that shown instead of the default red dots.
+# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
+# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
+# COMPLETION_WAITING_DOTS="true"
+
+# Uncomment the following line if you want to disable marking untracked files
+# under VCS as dirty. This makes repository status check for large repositories
+# much, much faster.
+# DISABLE_UNTRACKED_FILES_DIRTY="true"
+
+# Uncomment the following line if you want to change the command execution time
+# stamp shown in the history command output.
+# You can set one of the optional three formats:
+# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+# or set a custom format using the strftime function format specifications,
+# see 'man strftime' for details.
+# HIST_STAMPS="yyyy-mm-dd"
+
+# Would you like to use another custom folder than $ZSH/custom?
+# ZSH_CUSTOM=/path/to/new-custom-folder
+
+# Which plugins would you like to load?
+# Standard plugins can be found in $ZSH/plugins/
+# Custom plugins may be added to $ZSH_CUSTOM/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(
+    git
+    docker
+    docker-compose
+    python
+    pip
+    systemd
+    sudo
+    history
+    colored-man-pages
+    command-not-found
+    extract
+    web-search
+    copyfile
+    copypath
+    copybuffer
+    dirhistory
+    emoji
+    encode64
+    fzf
+    gh
+    jsontools
+    httpie
+    battery
+    bgnotify
+    common-aliases
+    globalias
+    history-substring-search
+    per-directory-history
+    magic-enter
+    aliases
+    ansible
+    aws
+    catimg
+    coffee
+    debian
+    dnf
+    fabric
+    frontend-search
+    gem
+    golang
+    gradle
+    grunt
+    gulp
+    node
+    npm
+    nvm
+    postgres
+    redis-cli
+    rust
+    ssh-agent
+    tmux
+    vi-mode
+    vscode
+    yarn
+    z
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+)
+
+# Oh My Zsh settings
+DISABLE_AUTO_UPDATE="true"  # Prevent automatic updates
+DISABLE_UPDATE_PROMPT="true"
+COMPLETION_WAITING_DOTS="true"
+HIST_STAMPS="yyyy-mm-dd"
+
+# History settings
+HISTSIZE=10000
+SAVEHIST=10000
+setopt HIST_VERIFY
+setopt SHARE_HISTORY
+setopt APPEND_HISTORY
+setopt INC_APPEND_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_REDUCE_BLANKS
+
+# Load Oh My Zsh
+source $ZSH/oh-my-zsh.sh
+
+# User configuration
+
+# export MANPATH="/usr/local/man:$MANPATH"
+
+# You may need to manually set your language environment
+# export LANG=en_US.UTF-8
+
+# Preferred editor for local and remote sessions
+# if [[ -n $SSH_CONNECTION ]]; then
+#   export EDITOR='vim'
+# else
+#   export EDITOR='nvim'
+# fi
+
+# Compilation flags
+# export ARCHFLAGS="-arch $(uname -m)"
+
+# Set personal aliases, overriding those provided by Oh My Zsh libs,
+# plugins, and themes. Aliases can be placed here, though Oh My Zsh
+# users are encouraged to define aliases within a top-level file in
+# the $ZSH_CUSTOM folder, with .zsh extension. Examples:
+# - $ZSH_CUSTOM/aliases.zsh
+# - $ZSH_CUSTOM/macos.zsh
+# For a full list of active aliases, run `alias`.
+#
+# Custom aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Docker aliases
+alias dps='docker ps'
+alias dpa='docker ps -a'
+alias di='docker images'
+alias dex='docker exec -it'
+alias dlogs='docker logs -f'
+alias dstop='docker stop $(docker ps -q)'
+alias drm='docker rm $(docker ps -aq)'
+alias drmi='docker rmi $(docker images -q)'
+
+# Git aliases
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git pull'
+alias gd='git diff'
+alias gb='git branch'
+alias gco='git checkout'
+
+# System aliases
+alias h='history'
+alias j='jobs -l'
+alias path='echo -e ${PATH//:/\n}'
+alias now='date +"%T"'
+alias nowtime=now
+alias nowdate='date +"%d-%m-%Y"'
+
+# Network aliases
+alias ports='netstat -tulanp'
+alias listening='netstat -tlnp'
+alias connections='netstat -an'
+
+# Process aliases
+alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
+alias myps='ps -f -u $USER'
+
+# MCP Server aliases (for our project)
+alias mcp-status='docker ps | grep mcp'
+alias mcp-logs='docker logs -f'
+alias mcp-restart='cd /opt/mcp-servers && docker-compose restart'
+alias mcp-stop='cd /opt/mcp-servers && docker-compose stop'
+alias mcp-start='cd /opt/mcp-servers && docker-compose up -d'
+
+# Custom functions
+# Extract various archive formats
+extract() {
+    if [ -f $1 ] ; then
+        case $1 in
+            *.tar.bz2)   tar xjf $1     ;;
+            *.tar.gz)    tar xzf $1     ;;
+            *.bz2)       bunzip2 $1     ;;
+            *.rar)       unrar e $1     ;;
+            *.gz)        gunzip $1      ;;
+            *.tar)       tar xf $1      ;;
+            *.tbz2)      tar xjf $1     ;;
+            *.tgz)       tar xzf $1     ;;
+            *.zip)       unzip $1       ;;
+            *.Z)         uncompress $1  ;;
+            *.7z)        7z x $1        ;;
+            *)     echo "'$1' cannot be extracted via extract()" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+# Create directory and cd into it
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# Find process by name
+psgrep() {
+    ps aux | grep -v grep | grep "$@" -i --color=auto
+}
+
+# Kill process by name
+killps() {
+    local pid pname sig="-TERM"
+    if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
+        echo "Usage: killps [-SIGNAL] pattern"
+        return;
+    fi
+    if [ $# = 2 ]; then sig=$1 ; shift ; fi
+    for pid in $(ps -eo pid,comm | grep "$1" | awk '{print $1}') ; do
+        pname=$(ps -p $pid -o comm --no-headers)
+        if confirm "Kill process $pid <$pname> with signal $sig?"
+            then kill $sig $pid
+        fi
+    done
+}
+
+# Ask for confirmation
+confirm() {
+    echo -n "$@" '[y/n] ' ; read ans
+    case "$ans" in
+        y*|Y*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+# System information
+sysinfo() {
+    echo "=== System Information ==="
+    echo "Hostname: $(hostname)"
+    echo "Uptime: $(uptime)"
+    echo "Load: $(cat /proc/loadavg)"
+    echo "Memory: $(free -h | grep Mem)"
+    echo "Disk: $(df -h / | tail -1)"
+    echo "========================="
+}
+
+# Export environment variables
+export EDITOR=nano
+export PAGER=less
+export BROWSER=firefox
+
+# Add local bin to PATH if it exists
+if [ -d "$HOME/.local/bin" ]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+
+# Add custom scripts to PATH
+if [ -d "$HOME/bin" ]; then
+    export PATH="$HOME/bin:$PATH"
+fi
+
+# Advanced system monitoring aliases and functions  
+alias sysmon='/home/milhy777/system_monitor.sh htop'
+alias syswatch='/home/milhy777/system_monitor.sh realtime'
+alias tmux-sys='tmux new-session -d -s monitor "/home/milhy777/system_monitor.sh realtime"'
+
+# Quick tmux sessions
+alias tmux-llms='tmux new-session -d -s llms "ssh LLMS"'
+alias tmux-has='tmux new-session -d -s has "ssh HAS"'
+alias tmux-dev='tmux new-session -d -s dev'
+
+# Temperature monitoring
+alias temps='watch -n 1 "sensors | grep -E \"Core|temp\""'
+alias cpuinfo='cat /proc/cpuinfo | grep -E "model name|cpu MHz|cache size" | head -6'
+
+# Enhanced welcome message using our system monitor
+welcome_info() {
+    if [ -f /home/milhy777/system_monitor.sh ]; then
+        /home/milhy777/system_monitor.sh htop
+    else
+        echo "┌─────────────────────────────────────────────────────────────┐"
+        echo "│                    🖥️  System Overview                      │"
+        echo "├─────────────────────────────────────────────────────────────┤"
+        echo "│ User: $(printf "%-20s" "$(whoami)") │ Host: $(printf "%-20s" "$(hostname)")  │"
+        echo "│ Load: $(printf "%-20s" "$(cat /proc/loadavg | cut -d' ' -f1-3)") │ Up: $(printf "%-22s" "$(uptime -p | sed 's/up //')")│"
+        echo "│ RAM:  $(printf "%-20s" "$(free -h | grep Mem | awk '{print $3"/"$2}')")  │ Disk: $(printf "%-20s" "$(df -h / | tail -1 | awk '{print $3"/"$2" ("$5")"}')")│"
+        echo "├─────────────────────────────────────────────────────────────┤"
+        echo "│                    🔗 Server Connections                    │"
+        echo "├─────────────────────────────────────────────────────────────┤"
+        echo "│ • ssh LLMS  → LLM Server (Dell OptiPlex 780)               │"
+        echo "│ • ssh HAS   → Home Automation Server (HP)                  │"
+        echo "├─────────────────────────────────────────────────────────────┤"
+        echo "│                     🛠️  Quick Commands                      │"
+        echo "├─────────────────────────────────────────────────────────────┤"
+        echo "│ • sysmon    → Enhanced system monitor                      │"
+        echo "│ • syswatch  → Real-time monitoring                         │"
+        echo "│ • tmux-sys  → Monitor in tmux session                      │"
+        echo "└─────────────────────────────────────────────────────────────┘"
+    fi
+}
+
+# Show welcome on login (but not for non-interactive shells)
+if [[ -o interactive ]]; then
+    welcome_info
+fi
+
+
+# antiX desktop session aliases (from .bashrc)
+alias srj="startx /usr/local/bin/desktop-session rox-jwm"
+alias srf="startx /usr/local/bin/desktop-session rox-fluxbox"
+alias sri="startx /usr/local/bin/desktop-session rox-icewm"
+alias szj="startx /usr/local/bin/desktop-session zzz-jwm"
+alias szf="startx /usr/local/bin/desktop-session zzz-fluxbox"
+alias szi="startx /usr/local/bin/desktop-session zzz-icewm"
+alias smj="startx /usr/local/bin/desktop-session min-jwm"
+alias smf="startx /usr/local/bin/desktop-session min-fluxbox"
+alias smi="startx /usr/local/bin/desktop-session min-icewm"
+alias shw="startx /usr/local/bin/desktop-session herbstluftwm"
+
+# Volume icon management
+alias volumeicon="pidof volumeicon || volumeicon &"
+
+# Claude aliases
+alias claude="/home/milhy777/.claude/local/claude"
+alias claude-code="node /usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js"
+alias claude-dev="/home/milhy777/claude-dev"
+alias perplexity="python3 /home/milhy777/perplexity-launcher.py"
+
+# Load common shell configuration
+if [ -f ~/.shell_common ]; then
+    source ~/.shell_common
+fi
+
+# Backup Strategy Aliases (from old-aliases-functions.txt)
+alias backup-now='/home/milhy777/backup_strategy.sh full'
+alias backup-daily='/home/milhy777/backup_strategy.sh daily'  
+alias backup-weekly='/home/milhy777/backup_strategy.sh weekly'
+alias backup-external='/home/milhy777/backup_strategy.sh external'
+alias backup-status='ls -la /home/milhy777/Backups/daily/ | tail -5'
+
+# Useful system aliases (from old config)
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# NVM configuration (installed under root)
+export NVM_DIR="/root/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Add NVM node binaries to PATH
+export PATH="/root/.nvm/versions/node/v24.5.0/bin:$PATH"
+
+# GitHub Copilot CLI (only if gh is available)
+command -v gh >/dev/null 2>&1 && eval "$(gh copilot alias -- zsh)" || true
+
+# Oh My Zsh theme switcher
+theme() {
+    if [ -z "$1" ]; then
+        echo "Available themes:"
+        ls ~/.oh-my-zsh/themes/ | grep -E "\.(zsh-theme)$" | sed 's/\.zsh-theme$//' | column
+        echo ""
+        echo "Current theme: $ZSH_THEME"
+        echo "Usage: theme <theme_name>"
+        return
+    fi
+    
+    sed -i "s/ZSH_THEME=\".*\"/ZSH_THEME=\"$1\"/" ~/.zshrc
+    echo "Theme changed to: $1"
+    echo "Restart your shell or run 'source ~/.zshrc' to apply"
+}
+
+# Plugin manager functions
+plugins_list() {
+    echo "Active plugins:"
+    echo $plugins | tr ' ' '\n' | sort
+}
+
+plugins_search() {
+    if [ -z "$1" ]; then
+        echo "Usage: plugins_search <search_term>"
+        return
+    fi
+    echo "Available plugins matching '$1':"
+    ls ~/.oh-my-zsh/plugins/ | grep -i "$1"
+}
+
+# Enhanced alias management
+alias_add() {
+    if [ $# -ne 2 ]; then
+        echo "Usage: alias_add <alias_name> <command>"
+        return
+    fi
+    echo "alias $1='$2'" >> ~/.zshrc
+    source ~/.zshrc
+    echo "Alias '$1' added successfully"
+}
+
+# Fun functions with plugins
+weather() {
+    curl -s "wttr.in/$1?format=3"
+}
+
+# Enhanced tmux functions
+tmux_session() {
+    if [ -z "$1" ]; then
+        echo "Active tmux sessions:"
+        tmux list-sessions 2>/dev/null || echo "No active sessions"
+        return
+    fi
+    tmux new-session -d -s "$1" && tmux attach-session -t "$1"
+}
+
+. "$HOME/.local/share/../bin/env"
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/milhy777/micromamba/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/milhy777/micromamba/etc/profile.d/conda.sh" ]; then
+        . "/home/milhy777/micromamba/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/milhy777/micromamba/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+export PATH="/home/milhy777:$PATH"
+
+# DBUS Session Fix pro Claude Desktop
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ] || ! dbus-send --session --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus.ListNames >/dev/null 2>&1; then
+    eval $(dbus-launch --sh-syntax)
+fi

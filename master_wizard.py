@@ -7,7 +7,7 @@ Entry point for intelligent multi-server environment setup
 import sys
 import argparse
 import logging
-from typing import Dict, List, Optional
+# from typing import Dict, List, Optional  # Currently unused
 from dataclasses import dataclass
 from enum import Enum
 
@@ -15,6 +15,10 @@ from tools.system_detector import SystemDetector
 from tools.dependency_resolver import DependencyResolver
 from tools.network_scanner import NetworkScanner
 from tools.config_validator import ConfigValidator
+from tools.preconditions import explain_environment
+from tools import __init__ as tools_init  # keep namespace import stable
+from tools import preconditions as _pre
+from tools.i18n import get as _t
 
 
 class SetupScenario(Enum):
@@ -106,21 +110,21 @@ class MasterWizard:
         self.logger = logging.getLogger(__name__)
 
     def display_banner(self):
-        """Display welcome banner with language selection."""
-        banner = """
-🚀 UNIFICATION SYSTEM SETUP
+        """Display welcome banner with language selection (localized)."""
+        env = explain_environment()
+        env_line = f"root={env.get('is_root')}, net={env.get('network')}, apt={env.get('has_apt')}, pacman={env.get('has_pacman')}, apk={env.get('has_apk')}"
+        banner = f"""
+🚀 {_t('banner_title', self.language, 'UNIFICATION SYSTEM SETUP')}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Ultimate Multi-Server Environment Setup Automation
 Born from 150+ SSH configuration battles
 
-System detected: {system_info}
-Available ecosystems: {network_info}
+System detected: {self.get_system_summary()}
+Available ecosystems: {self.get_network_summary()}
+{_t('info_env_summary', self.language, 'Environment summary')}: {env_line}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        """.format(
-            system_info=self.get_system_summary(),
-            network_info=self.get_network_summary()
-        )
+        """
         print(banner)
 
     def get_system_summary(self) -> str:
@@ -213,25 +217,48 @@ Available ecosystems: {network_info}
         print("🔄 Post-Reinstall Recovery - Coming soon...")
 
     def execute_health_check(self):
-        """Perform comprehensive ecosystem health check."""
-        print("🩺 Running ecosystem health check...")
+        """Perform comprehensive ecosystem health check (localized output)."""
+        # Lokalizované popisky
+        lang = self.language
+        start_msg = "🩺 Spouštím kontrolu zdraví ekosystému..." if lang == "cz" else "🩺 Running ecosystem health check..."
+        sys_ok = "✅ V pořádku" if lang == "cz" else "✅ OK"
+        sys_bad = "❌ Nalezeny problémy" if lang == "cz" else "❌ Issues detected"
+        net_bad = "❌ Problémy s konektivitou" if lang == "cz" else "❌ Connection issues"
+        conf_bad = "❌ Problémy v konfiguraci" if lang == "cz" else "❌ Config issues"
+        section_system = "Zdraví systému" if lang == "cz" else "System Health"
+        section_network = "Zdraví sítě" if lang == "cz" else "Network Health"
+        section_config = "Konfigurace" if lang == "cz" else "Configuration Health"
+        summary_hdr = "Souhrn doporučení" if lang == "cz" else "Recommendations summary"
+
+        print(start_msg)
 
         try:
             # System health
             system_status = self.system_detector.health_check()
-            print(f"System Health: {'✅ OK' if system_status else '❌ Issues detected'}")
+            print(f"{section_system}: {sys_ok if system_status else sys_bad}")
 
             # Network connectivity
             network_status = self.network_scanner.connectivity_check()
-            print(f"Network Health: {'✅ OK' if network_status else '❌ Connection issues'}")
+            print(f"{section_network}: {sys_ok if network_status else net_bad}")
 
-            # Configuration validation
+            # Configuration validation + stručný report
             config_status = self.config_validator.validate_ecosystem()
-            print(f"Configuration Health: {'✅ OK' if config_status else '❌ Config issues'}")
+            print(f"{section_config}: {sys_ok if config_status else conf_bad}")
+
+            # Volitelně vypíšeme krátký souhrn z detailního reportu
+            try:
+                report = self.config_validator.generate_validation_report()
+                if report.recommendations:
+                    print(f"\n{summary_hdr}:")
+                    # vytisknout max 5 doporučení
+                    for rec in report.recommendations[:5]:
+                        print(f" - {rec}")
+            except Exception as rep_e:
+                self.logger.debug(f"Could not generate detailed validation report: {rep_e}")
 
         except Exception as e:
             self.logger.error(f"Health check failed: {e}")
-            print(f"Health check failed: {e}")
+            print(("Kontrola zdraví selhala: " if lang == "cz" else "Health check failed: ") + str(e))
 
     def run(self, dry_run: bool = False):
         """Main wizard execution loop."""
