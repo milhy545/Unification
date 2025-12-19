@@ -27,3 +27,4 @@ ssh-keys-export/id_*
 # IDE
 .vscode/
 .idea/
+Folder.DotSettings.user
