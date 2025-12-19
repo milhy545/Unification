@@ -3,3 +3,23 @@
 
 # GitHub App credentials
 gha-creds-*.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+*.log
+unification.log
+
+# SSH keys - NEVER commit!
+ssh-keys-export/
+*.pem
+id_*
+*_key
+*_key.pub
+
+# IDE
+.vscode/
+.idea/
