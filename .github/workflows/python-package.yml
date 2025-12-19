@@ -22,6 +22,10 @@ jobs:
         python-version: ["3.9", "3.10", "3.11"]
 
     steps:
+    - name: Harden runner
+      uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76
+      with:
+        egress-policy: audit
     - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c
